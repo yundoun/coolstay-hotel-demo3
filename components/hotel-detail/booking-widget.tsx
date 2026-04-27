@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Hotel, Room } from '@/lib/types';
@@ -24,14 +24,7 @@ export function BookingWidget({ hotel, externalSelectedRoom }: BookingWidgetProp
   const [internalRoom, setInternalRoom] = useState<Room | null>(null);
   const [roomOpen, setRoomOpen] = useState(false);
 
-  // Sync external selection from RoomCard clicks
   const currentRoom = externalSelectedRoom ?? internalRoom;
-
-  useEffect(() => {
-    if (externalSelectedRoom) {
-      setInternalRoom(externalSelectedRoom);
-    }
-  }, [externalSelectedRoom]);
 
   const handleBook = () => {
     if (!currentRoom) return;
