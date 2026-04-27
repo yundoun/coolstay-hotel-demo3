@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - banner [ref=e5]:
+        - generic [ref=e6]:
+          - link [ref=e8] [cursor=pointer]:
+            - /url: /
+            - img [ref=e9]
+          - generic [ref=e12]:
+            - button "국내 해외" [ref=e13] [cursor=pointer]
+            - generic [ref=e18]
+            - button "어디로 떠날까요?" [ref=e27] [cursor=pointer]
+          - navigation [ref=e32]:
+            - list [ref=e33]
+            - generic [ref=e43]
+      - generic [ref=e61]:
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - generic [ref=e66] [cursor=pointer]
+            - generic [ref=e72] [cursor=pointer]
+            - generic [ref=e78] [cursor=pointer]
+            - generic [ref=e84] [cursor=pointer]
+            - generic [ref=e90] [cursor=pointer]
+            - generic [ref=e96] [cursor=pointer]
+            - generic [ref=e102] [cursor=pointer]
+          - generic [ref=e111]: 06 / 07
+          - img "prev-button" [ref=e113] [cursor=pointer]
+          - img "next-button" [ref=e115] [cursor=pointer]
+        - generic [ref=e116]:
+          - generic [ref=e529]:
+            - link "우리 부모님 마음에 쏙 드는 추천 스테이, 최대 30% 할인 다가오는 어버이날, 부모님께 여행을 선물하세요!" [ref=e530] [cursor=pointer]:
+              - /url: /selection/542
+            - generic [ref=e537]
+          - generic [ref=e833]:
+            - link "셀럽들을 사로잡은, 취향과 감도가 보장된 10곳 다녀온 이들이 입을 모아 칭찬하는 공간들만 모았어요!" [ref=e834] [cursor=pointer]:
+              - /url: /selection/539
+            - generic [ref=e841]
+          - generic [ref=e142]:
+            - link "평점 4.9가 증명하는 실패 없는 휴식 다녀온 분들의 촘촘한 후기에는 이유가 있죠. 믿고 떠날 수 있는 곳들만 골라두었어요. AD" [ref=e143] [cursor=pointer]:
+              - /url: /ad-selection
+            - generic [ref=e154]
+          - generic [ref=e1137]:
+            - link "제주에서 일주일살기, 망설였다면 지금이 기회예요! 최대 30% 할인에 3종 쿠폰을 더해 긴 여행의 부담은 덜고 설렘은 가득히 채워 드려요." [ref=e1138] [cursor=pointer]:
+              - /url: /selection/531
+            - generic [ref=e1145]
+          - generic [ref=e1491]:
+            - link "지금 오픈한 신상 스테이들, 15,000원 쿠폰받고 예약하세요! 론칭 기념 할인 혜택도 함께 적용됩니다. 가장 합리적으로 여행을 준비해요." [ref=e1492] [cursor=pointer]:
+              - /url: /selection/264
+            - generic [ref=e1499]
+          - generic [ref=e1845]:
+            - link "함께하는 여행도 부담 없이 넓은 테이블과 아늑한 침실, 여럿이도 여유롭게 머물 수 있는 스테이를 엄선했어요." [ref=e1846] [cursor=pointer]:
+              - /url: /selection/108
+            - generic [ref=e1853]
+      - contentinfo [ref=e479]:
+        - contentinfo [ref=e480]:
+          - generic [ref=e481]:
+            - generic [ref=e482]
+            - generic [ref=e494]
+    - button
+    - button
+  - alert [ref=e528]
