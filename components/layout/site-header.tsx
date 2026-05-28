@@ -1,66 +1,123 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn } from '@/domain/shared/utils';
+import { Menu, X } from 'lucide-react';
+
+const NAV_ITEMS = [
+  { href: '#greeting', label: '인사말' },
+  { href: '#about', label: '호텔 소개' },
+  { href: '#rooms', label: '객실' },
+  { href: '#reservation', label: '예약' },
+  { href: '#location', label: '오시는 길' },
+];
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
-    { href: '/hotels', label: 'FIND STAY', isActive: pathname.startsWith('/hotels') },
-    { href: '/hotels/list?sort=discount', label: 'PROMOTION', isActive: false },
-  ];
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (pathname !== '/') {
+      // 다른 페이지에서는 홈으로 이동 후 해당 섹션으로
+      return;
+    }
+    e.preventDefault();
+    const id = href.replace('#', '');
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+    setMobileOpen(false);
+  };
 
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300',
-        scrolled && 'shadow-[0_1px_3px_rgba(0,0,0,0.08)]'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
+        scrolled
+          ? 'bg-white/95 backdrop-blur-sm shadow-[0_1px_0_rgba(0,0,0,0.06)]'
+          : 'bg-transparent'
       )}
     >
       <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
         <nav className="flex items-center justify-between h-16 lg:h-[72px]">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/coolstay_logo.png"
-              alt="꿀스테이"
-              width={120}
-              height={36}
-              className="h-7 lg:h-8 w-auto"
-              priority
-            />
-          </Link>
+          <a
+            href={pathname === '/' ? '#' : '/'}
+            onClick={(e) => {
+              if (pathname === '/') {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="flex items-center gap-2"
+          >
+            <span
+              className={cn(
+                'font-barlow text-xl font-bold tracking-wider transition-colors duration-500',
+                scrolled ? 'text-neutral-900' : 'text-white'
+              )}
+            >
+              STAY ONDA
+            </span>
+          </a>
 
-          <div className="flex items-center gap-8">
-            {navItems.map((item) => (
-              <Link
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-8">
+            {NAV_ITEMS.map((item) => (
+              <a
                 key={item.label}
-                href={item.href}
+                href={pathname === '/' ? item.href : `/${item.href}`}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className={cn(
-                  'font-barlow text-sm font-bold tracking-wider uppercase transition-colors duration-200',
-                  item.isActive
-                    ? 'text-neutral-900 underline underline-offset-[6px] decoration-2 decoration-brand-500'
-                    : 'text-neutral-600 hover:text-neutral-900'
+                  'font-barlow text-[13px] font-semibold tracking-wider uppercase transition-colors duration-300',
+                  scrolled
+                    ? 'text-neutral-500 hover:text-neutral-900'
+                    : 'text-white/60 hover:text-white'
                 )}
               >
                 {item.label}
-              </Link>
+              </a>
             ))}
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className={cn(
+              'md:hidden w-10 h-10 flex items-center justify-center transition-colors',
+              scrolled ? 'text-neutral-900' : 'text-white'
+            )}
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </nav>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden bg-white border-t border-neutral-100">
+          <div className="px-6 py-4 space-y-1">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.label}
+                href={pathname === '/' ? item.href : `/${item.href}`}
+                onClick={(e) => handleNavClick(e, item.href)}
+                className="block py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900 border-b border-neutral-50 last:border-0"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

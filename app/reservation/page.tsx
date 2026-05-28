@@ -1,5 +1,5 @@
-import { ReservationShell } from '@/components/reservation/reservation-shell';
+import { redirect } from 'next/navigation';
 
 export default function ReservationPage() {
-  return <ReservationShell />;
+  redirect('/#reservation');
 }

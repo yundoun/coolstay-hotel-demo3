@@ -4,9 +4,9 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
 
 export const metadata: Metadata = {
-  title: '꿀스테이 | 대한민국 프리미엄 호텔 큐레이션',
+  title: 'STAY ONDA | 제주 애월, 바다 위의 고요한 쉼표',
   description:
-    '꿀스테이가 엄선한 대한민국 최고의 호텔을 만나보세요. 특별한 가격으로 럭셔리 스테이를 경험하세요.',
+    '한담해안산책로가 시작되는 곳, 제주 애월 바닷가의 감성 부티크 호텔. 바다와 바람, 고요한 쉼을 경험하세요.',
 };
 
 export default function RootLayout({

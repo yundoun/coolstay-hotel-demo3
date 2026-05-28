@@ -1,0 +1,96 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useReservation } from '../reservation-context';
+import { formatPrice, cn } from '@/domain/shared/utils';
+import type { ApiRoom, RoomsResponse } from '@/adapters/coolstay/types';
+import { Maximize2, BedDouble, Users, Check } from 'lucide-react';
+
+export function StepRoom() {
+  const { selectedRoom, setSelectedRoom, checkIn, checkOut, goTo } = useReservation();
+  const [rooms, setRooms] = useState<ApiRoom[]>([]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (checkIn) params.set('checkIn', checkIn);
+    if (checkOut) params.set('checkOut', checkOut);
+
+    fetch(`/api/store/rooms?${params}`)
+      .then((r) => r.json())
+      .then((data: RoomsResponse) => setRooms(data.rooms));
+  }, [checkIn, checkOut]);
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-xl font-bold text-neutral-900 mb-2">객실을 선택하세요</h3>
+        <p className="text-sm text-neutral-500">날짜에 맞는 객실과 요금을 확인하세요.</p>
+      </div>
+
+      <div className="space-y-4">
+        {rooms.map((room) => {
+          const isSelected = selectedRoom?.itemKey === room.itemKey;
+          return (
+            <button
+              key={room.itemKey}
+              onClick={() => setSelectedRoom(room)}
+              className={cn(
+                'w-full text-left flex flex-col sm:flex-row gap-4 p-4 border rounded-lg transition-all bg-white',
+                isSelected
+                  ? 'border-neutral-900 ring-1 ring-neutral-900/10'
+                  : 'border-neutral-200 hover:border-neutral-300'
+              )}
+            >
+              <div className="relative w-full sm:w-[160px] aspect-[16/10] rounded-md overflow-hidden shrink-0 bg-neutral-100">
+                <Image
+                  src={room.image}
+                  alt={room.name}
+                  fill
+                  className="object-cover"
+                  sizes="160px"
+                />
+              </div>
+              <div className="flex-1 flex flex-col justify-between min-w-0">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-semibold text-neutral-900">{room.name}</h4>
+                    {isSelected && <Check className="w-4 h-4 text-neutral-900" />}
+                  </div>
+                  <div className="flex gap-3 text-xs text-neutral-500 mb-2">
+                    <span className="flex items-center gap-1">
+                      <Maximize2 className="w-3 h-3" />{room.size}m²
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <BedDouble className="w-3 h-3" />{room.bedType}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />최대 {room.maxGuests}인
+                    </span>
+                  </div>
+                </div>
+                <p className="text-lg font-bold text-neutral-900">
+                  ₩{formatPrice(room.price)}
+                  <span className="text-sm font-normal text-neutral-400"> /박</span>
+                </p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex gap-3">
+        <button onClick={() => goTo(1)} className="flex-1 h-14 border border-neutral-300 text-neutral-700 font-semibold hover:bg-white transition-colors text-sm">
+          이전
+        </button>
+        <button
+          onClick={() => goTo(3)}
+          disabled={!selectedRoom}
+          className="flex-1 h-14 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-semibold transition-colors text-sm tracking-wide"
+        >
+          다음 단계
+        </button>
+      </div>
+    </div>
+  );
+}
