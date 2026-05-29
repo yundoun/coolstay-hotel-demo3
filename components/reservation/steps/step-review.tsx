@@ -208,17 +208,23 @@ export function StepReview() {
 
       {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
-      <div className="flex gap-3">
-        <button onClick={() => goTo(3)} className="flex-1 h-14 border border-neutral-300 text-neutral-700 font-semibold hover:bg-white transition-colors text-sm">
-          이전
-        </button>
-        <button
-          onClick={handleComplete}
-          disabled={submitting || !requiredAgreed}
-          className="flex-1 h-14 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-bold text-sm tracking-wide transition-colors"
-        >
-          {submitting ? '처리 중...' : '예약하기'}
-        </button>
+      {/* Sticky bottom nav */}
+      <div className="sticky bottom-0 z-30 -mx-4 mt-10 pointer-events-none px-4 py-4 sm:-mx-0 sm:px-0">
+        <div className="pointer-events-auto rounded-xl border border-neutral-200/60 bg-white/90 backdrop-blur-sm shadow-lg shadow-neutral-900/5 px-5 py-4 flex items-center justify-between gap-3">
+          <button
+            onClick={() => goTo(3)}
+            className="h-12 px-6 border border-neutral-300 text-neutral-700 font-semibold hover:bg-white rounded-lg transition-colors text-sm"
+          >
+            ← 이전
+          </button>
+          <button
+            onClick={handleComplete}
+            disabled={submitting || !requiredAgreed}
+            className="h-12 px-8 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-bold rounded-lg text-sm tracking-wide transition-colors"
+          >
+            {submitting ? '처리 중...' : '예약하기'}
+          </button>
+        </div>
       </div>
     </div>
   );

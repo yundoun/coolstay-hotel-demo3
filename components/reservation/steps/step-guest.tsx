@@ -155,23 +155,28 @@ export function StepGuest() {
           )}
         </div>
 
-        <div className="flex gap-3 pt-2">
+      </form>
+
+      {/* Sticky bottom nav */}
+      <div className="sticky bottom-0 z-30 -mx-4 mt-10 pointer-events-none px-4 py-4 sm:-mx-0 sm:px-0">
+        <div className="pointer-events-auto rounded-xl border border-neutral-200/60 bg-white/90 backdrop-blur-sm shadow-lg shadow-neutral-900/5 px-5 py-4 flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => goTo(2)}
-            className="flex-1 h-14 border border-neutral-300 text-neutral-700 font-semibold hover:bg-white transition-colors text-sm"
+            className="h-12 px-6 border border-neutral-300 text-neutral-700 font-semibold hover:bg-white rounded-lg transition-colors text-sm"
           >
-            이전
+            ← 이전
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={() => { if (canProceed) goTo(4); }}
             disabled={!canProceed}
-            className="flex-1 h-14 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-semibold transition-colors text-sm tracking-wide"
+            className="h-12 px-8 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-semibold rounded-lg transition-colors text-sm tracking-wide"
           >
-            다음 단계
+            다음 단계 →
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

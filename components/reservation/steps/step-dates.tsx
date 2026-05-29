@@ -12,6 +12,24 @@ export function StepDates() {
 
   const canProceed = checkIn && checkOut && checkIn < checkOut;
 
+  const nights =
+    checkIn && checkOut
+      ? Math.max(
+          0,
+          Math.round(
+            (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
+              86_400_000,
+          ),
+        )
+      : 0;
+
+  const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
+  const formatDate = (d: string) => {
+    if (!d) return '';
+    const date = new Date(d);
+    return `${date.getMonth() + 1}월 ${date.getDate()}일(${DAY_NAMES[date.getDay()]})`;
+  };
+
   return (
     <div className="max-w-lg mx-auto space-y-8">
       <div>
@@ -70,13 +88,23 @@ export function StepDates() {
         </div>
       </div>
 
-      <button
-        onClick={() => goTo(2)}
-        disabled={!canProceed}
-        className="w-full h-14 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-semibold text-sm tracking-wide transition-colors"
-      >
-        객실 선택
-      </button>
+      {/* Sticky bottom nav */}
+      <div className="sticky bottom-0 z-30 -mx-4 mt-10 pointer-events-none px-4 py-4 sm:-mx-0 sm:px-0">
+        <div className="pointer-events-auto rounded-xl border border-neutral-200/60 bg-white/90 backdrop-blur-sm shadow-lg shadow-neutral-900/5 px-5 py-4 flex items-center justify-between">
+          <span className="text-sm text-neutral-500 hidden sm:block">
+            {canProceed
+              ? <>{formatDate(checkIn)} → {formatDate(checkOut)} · <span className="font-semibold text-neutral-800">{nights}박</span></>
+              : '날짜를 선택하세요'}
+          </span>
+          <button
+            onClick={() => goTo(2)}
+            disabled={!canProceed}
+            className="w-full sm:w-auto h-12 px-8 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 text-white font-semibold text-sm tracking-wide rounded-lg transition-colors"
+          >
+            객실 선택 →
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
