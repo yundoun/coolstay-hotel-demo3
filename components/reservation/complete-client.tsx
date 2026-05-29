@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useReservation } from '@/adapters/zustand/reservation-store';
-import { useStoreInfo } from '@/application/hooks/useStoreInfo';
+import { siteConfig } from '@/hotel-data';
 import { formatPrice } from '@/domain/shared/utils';
 import { Container } from '@/components/ui/container';
 import { CheckCircle, Copy, ArrowRight } from 'lucide-react';
@@ -14,11 +14,10 @@ export function CompleteClient() {
     adults, guestName, guestEmail, reset,
   } = useReservation();
 
-  const { data: storeInfo } = useStoreInfo();
   const [copied, setCopied] = useState(false);
 
   const totalPrice = apiRoom?.price ?? 0;
-  const storeName = storeInfo?.name ?? apiRoom?.storeName ?? '';
+  const storeName = siteConfig.name;
 
   const handleCopy = () => {
     if (reservationNumber) {

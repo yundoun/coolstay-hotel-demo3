@@ -1,1 +1,1 @@
-export { siteConfig } from './stay-onda';
+export { siteConfig } from './gyeongju-cl';

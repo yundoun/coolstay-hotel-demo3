@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/domain/shared/utils';
 import { Menu, X } from 'lucide-react';
-import { useStoreInfo } from '@/application/hooks/useStoreInfo';
+import { siteConfig } from '@/hotel-data';
 
 const NAV_ITEMS = [
   { href: '#greeting', label: '인사말' },
@@ -18,9 +18,8 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const { data } = useStoreInfo();
 
-  const nameEn = data?.nameEn || data?.name || '';
+  const nameEn = siteConfig.nameEn || siteConfig.name;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);

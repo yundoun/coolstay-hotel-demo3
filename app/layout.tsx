@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter } from '@/components/layout/site-footer';
+import { siteConfig } from '@/hotel-data';
 
 export const metadata: Metadata = {
-  title: 'STAY ONDA | 제주 애월, 바다 위의 고요한 쉼표',
-  description:
-    '한담해안산책로가 시작되는 곳, 제주 애월 바닷가의 감성 부티크 호텔. 바다와 바람, 고요한 쉼을 경험하세요.',
+  title: `${siteConfig.nameEn} | ${siteConfig.shortConcept}`,
+  description: siteConfig.about.body,
 };
 
 export default function RootLayout({

@@ -1,0 +1,59 @@
+import type { SiteConfig } from '@/domain/site-config/types';
+
+export const siteConfig: SiteConfig = {
+  id: 'gyeongju-cl',
+  name: '경주 씨엘 미니호텔',
+  nameEn: 'GYEONGJU CL MINI HOTEL',
+  city: '경북 경주',
+  address: '경북 경주시 북정로 68',
+  phone: '010-2881-4995',
+  email: '',
+  checkInTime: '15:00',
+  checkOutTime: '11:00',
+
+  heroImages: [
+    'https://cdn.coolstay.co.kr/upload/etc/tnwjdtnwjd99/2024/04/15/11/d70c83c6dac24441953ada2185e93119.jpg',
+    'https://storage.googleapis.com/coolstay-dev/v2/owner/shark1230/2024/05/28/10/85d9ae002f184020b52ca5ff9593ad5f.jpg',
+    'https://storage.googleapis.com/coolstay-dev/v2/owner/shark1230/2024/05/28/10/1e3f4110ca264bb4865c4e45831f1b30.jpg',
+    'https://storage.googleapis.com/coolstay-dev/v2/owner/shark1230/2024/05/28/10/e83e1d63b4b746b9affc5962bda43b57.jpg',
+  ],
+  shortConcept: '경주 도심 속 편안한 휴식',
+
+  greeting: {
+    headline: '경주 씨엘 미니호텔에 오신 것을 환영합니다',
+    body: '천년 고도 경주의 중심에 자리한 씨엘 미니호텔입니다.\n\n깨끗하고 편안한 객실에서 경주 여행의 피로를 풀고, 주변 관광지와 맛집을 도보로 즐겨보세요. 가성비 좋은 숙박과 정성 어린 서비스로 여행의 즐거움을 더해드리겠습니다.',
+    signature: '씨엘 미니호텔 일동',
+  },
+
+  about: {
+    eyebrow: 'About',
+    title: '경주의 중심에서\n편안한 하루를',
+    body: '경주 시내 중심부에 위치한 씨엘 미니호텔은 대릉원, 첨성대, 동궁과 월지 등 주요 관광지를 도보로 이동할 수 있는 최적의 위치에 있습니다. 깔끔한 시설과 따뜻한 서비스로 경주 여행의 완벽한 베이스캠프가 되어드리겠습니다.',
+    philosophy: '',
+    images: [
+      'https://storage.googleapis.com/coolstay-dev/v2/owner/shark1230/2024/05/28/10/95512107b7444b85a7b59d60b947d18f.jpg',
+      'https://storage.googleapis.com/coolstay-dev/v2/owner/shark1230/2024/05/28/10/54767c8d2cef4fc39a493f2079fb5663.jpg',
+      'https://storage.googleapis.com/coolstay-dev/v2/owner/shark1230/2024/05/28/10/56cd5f1bbeea4d8bac9fd020be0fe82d.jpg',
+      'https://storage.googleapis.com/coolstay-dev/v2/owner/shark1230/2024/05/28/10/d09b670afd0342588f73f42fbaa33fec.jpg',
+    ],
+  },
+
+  amenities: [
+    '무료 WiFi',
+    '주차장',
+    '프론트 데스크',
+  ],
+
+  tags: ['경주', '미니호텔', '도심', '관광지 인접'],
+
+  directions: {
+    latitude: '35.8469386000',
+    longitude: '129.2157915000',
+    parkingInfo: '자체 주차 6대 가능. 만차 시 인근 공영 주차장 이용 (유료 주차 시 프론트에 말씀해주시면 주차비 지원)',
+    nearbyItems: [
+      { label: '대릉원', value: '도보 약 10분' },
+      { label: '첨성대', value: '도보 약 15분' },
+      { label: '성동시장', value: '도보 1분' },
+    ],
+  },
+};

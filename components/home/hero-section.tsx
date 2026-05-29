@@ -2,19 +2,17 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useStoreInfo } from '@/application/hooks/useStoreInfo';
+import { siteConfig } from '@/hotel-data';
 
 export function HeroSection() {
-  const { data } = useStoreInfo();
-
   const scrollToGreeting = () => {
     const el = document.getElementById('greeting');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const heroImage = data?.images?.[0]?.url ?? '';
-  const name = data?.name ?? '';
-  const nameEn = data?.nameEn ?? '';
+  const heroImage = siteConfig.heroImages[0] ?? '';
+  const name = siteConfig.name;
+  const nameEn = siteConfig.nameEn;
 
   return (
     <section id="hero" className="relative h-screen min-h-[600px] max-h-[900px]">
@@ -37,7 +35,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <p className="font-barlow text-sm tracking-[0.35em] text-white/60 uppercase mb-4">
-            {data?.address?.split(' ').slice(0, 2).join(' ') ?? ''}
+            {siteConfig.city}
           </p>
           <h1 className="font-barlow text-4xl md:text-6xl lg:text-7xl font-bold tracking-wider text-white mb-4">
             {nameEn || name}

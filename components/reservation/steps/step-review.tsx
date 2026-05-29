@@ -3,7 +3,7 @@
 import { useReservationContext } from '../reservation-context';
 import { useReservation as useReservationStore } from '@/adapters/zustand/reservation-store';
 import { useSubmitReservation } from '@/application/hooks/useSubmitReservation';
-import { useStoreInfo } from '@/application/hooks/useStoreInfo';
+import { siteConfig } from '@/hotel-data';
 import { formatPrice, cn } from '@/domain/shared/utils';
 import { CreditCard, Building2, Smartphone } from 'lucide-react';
 
@@ -22,10 +22,9 @@ export function StepReview() {
   } = useReservationContext();
 
   const store = useReservationStore();
-  const { data: storeInfo } = useStoreInfo();
   const { submit, submitting, error } = useSubmitReservation();
 
-  const storeName = storeInfo?.name ?? storeData?.storeName ?? '';
+  const storeName = siteConfig.name;
 
   const handleComplete = () => {
     if (!selectedRoom || !storeData) return;
