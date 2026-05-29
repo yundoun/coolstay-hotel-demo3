@@ -4,21 +4,14 @@ import { useReservationContext } from '../reservation-context';
 import { useReservation as useReservationStore } from '@/adapters/zustand/reservation-store';
 import { useSubmitReservation } from '@/application/hooks/useSubmitReservation';
 import { siteConfig } from '@/hotel-data';
-import { formatPrice, cn } from '@/domain/shared/utils';
-import { CreditCard, Building2, Smartphone } from 'lucide-react';
-
-const PAYMENT_METHODS = [
-  { id: 'card', label: '신용카드', icon: CreditCard },
-  { id: 'bank', label: '계좌이체', icon: Building2 },
-  { id: 'mobile', label: '간편결제', icon: Smartphone },
-] as const;
+import { formatPrice } from '@/domain/shared/utils';
+import { Banknote } from 'lucide-react';
 
 export function StepReview() {
   const {
-    checkIn, checkOut, nights, adults, childrenCount,
+    checkIn, checkOut, nights, adults,
     selectedRoom, storeData, totalPrice,
-    guestName, guestPhone, guestEmail,
-    paymentMethod, setPaymentMethod, goTo,
+    guestName, guestPhone, goTo,
   } = useReservationContext();
 
   const store = useReservationStore();
@@ -29,11 +22,10 @@ export function StepReview() {
   const handleComplete = () => {
     if (!selectedRoom || !storeData) return;
 
-    // Zustand 스토어에 데이터 동기화
     store.setDates(checkIn, checkOut);
     store.setAdults(adults);
     store.setRoom(selectedRoom.itemKey);
-    store.setGuestInfo({ name: guestName, phone: guestPhone, email: guestEmail });
+    store.setGuestInfo({ name: guestName, phone: guestPhone, email: '' });
     store.setApiRoom({
       motelKey: storeData.motelKey,
       storeName: storeData.storeName,
@@ -54,8 +46,8 @@ export function StepReview() {
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-xl font-bold text-neutral-900 mb-2">예약 확인 및 결제</h3>
-        <p className="text-sm text-neutral-500">예약 정보를 확인하고 결제해주세요.</p>
+        <h3 className="text-xl font-bold text-neutral-900 mb-2">예약 확인</h3>
+        <p className="text-sm text-neutral-500">예약 정보를 확인해주세요.</p>
       </div>
 
       <div className="bg-white rounded-lg p-6 space-y-4 border border-neutral-200">
@@ -66,39 +58,25 @@ export function StepReview() {
           <InfoItem label="체크인" value={checkIn} />
           <InfoItem label="체크아웃" value={checkOut} />
           <InfoItem label="숙박" value={`${nights}박`} />
-          <InfoItem
-            label="인원"
-            value={`성인 ${adults}명${childrenCount > 0 ? `, 아동 ${childrenCount}명` : ''}`}
-          />
+          <InfoItem label="인원" value={`성인 ${adults}명`} />
         </div>
         <div className="border-t border-neutral-100 pt-4">
           <h4 className="text-sm text-neutral-400 mb-2">투숙객</h4>
           <div className="text-sm space-y-1">
             <p className="font-medium text-neutral-800">{guestName}</p>
             <p className="text-neutral-500">{guestPhone}</p>
-            <p className="text-neutral-500">{guestEmail}</p>
           </div>
         </div>
       </div>
 
       <div className="space-y-4">
         <h4 className="font-semibold text-neutral-900">결제 수단</h4>
-        <div className="grid grid-cols-3 gap-3">
-          {PAYMENT_METHODS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setPaymentMethod(id)}
-              className={cn(
-                'flex flex-col items-center gap-2 p-4 border rounded-lg transition-all text-sm bg-white',
-                paymentMethod === id
-                  ? 'border-neutral-900 text-neutral-900'
-                  : 'border-neutral-200 text-neutral-500 hover:border-neutral-300'
-              )}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium text-xs">{label}</span>
-            </button>
-          ))}
+        <div className="flex items-center gap-3 p-4 border border-neutral-900 rounded-lg bg-white">
+          <Banknote className="w-5 h-5 text-neutral-900" />
+          <div>
+            <p className="text-sm font-medium text-neutral-900">현장결제</p>
+            <p className="text-xs text-neutral-500">체크인 시 프론트에서 결제합니다.</p>
+          </div>
         </div>
       </div>
 
@@ -124,7 +102,7 @@ export function StepReview() {
           disabled={submitting}
           className="flex-1 h-14 bg-neutral-900 hover:bg-neutral-800 disabled:bg-neutral-400 text-white font-bold text-sm tracking-wide transition-colors"
         >
-          {submitting ? '처리 중...' : '결제하기'}
+          {submitting ? '처리 중...' : '예약하기'}
         </button>
       </div>
     </div>

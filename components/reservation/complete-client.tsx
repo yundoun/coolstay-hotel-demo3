@@ -11,7 +11,7 @@ import { useState } from 'react';
 export function CompleteClient() {
   const {
     reservationNumber, apiRoom, checkIn, checkOut,
-    adults, guestName, guestEmail, reset,
+    adults, guestName, reset,
   } = useReservation();
 
   const [copied, setCopied] = useState(false);
@@ -36,7 +36,7 @@ export function CompleteClient() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-neutral-900 mb-2">예약이 완료되었습니다</h1>
-            {guestEmail && <p className="text-neutral-500">예약 확인 메일이 {guestEmail}로 발송됩니다.</p>}
+            <p className="text-neutral-500">현장결제로 예약이 접수되었습니다.</p>
           </div>
           <div className="inline-flex items-center gap-3 bg-neutral-50 px-6 py-3 rounded-lg">
             <span className="text-sm text-neutral-500">예약번호</span>

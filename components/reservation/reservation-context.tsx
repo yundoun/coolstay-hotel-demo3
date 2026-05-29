@@ -24,9 +24,7 @@ interface ReservationContextValue {
   setCheckOut: (v: string) => void;
 
   adults: number;
-  childrenCount: number;
   setAdults: (v: number) => void;
-  setChildrenCount: (v: number) => void;
 
   selectedRoom: ApiRoom | null;
   setSelectedRoom: (room: ApiRoom) => void;
@@ -35,15 +33,10 @@ interface ReservationContextValue {
 
   guestName: string;
   guestPhone: string;
-  guestEmail: string;
-  guestRequests: string;
+  phoneVerified: boolean;
   setGuestName: (v: string) => void;
   setGuestPhone: (v: string) => void;
-  setGuestEmail: (v: string) => void;
-  setGuestRequests: (v: string) => void;
-
-  paymentMethod: string;
-  setPaymentMethod: (v: string) => void;
+  setPhoneVerified: (v: boolean) => void;
 
   nights: number;
   totalPrice: number;
@@ -64,16 +57,12 @@ export function ReservationProvider({ children }: { children: React.ReactNode })
   const [checkIn, setCheckIn] = useState(store.checkIn);
   const [checkOut, setCheckOut] = useState(store.checkOut);
   const [adults, setAdults] = useState(store.adults);
-  const [childrenCount, setChildrenCount] = useState(0);
   const [selectedRoom, setSelectedRoom] = useState<ApiRoom | null>(null);
   const [storeData, setStoreData] = useState<RoomsResponse | null>(null);
 
   const [guestName, setGuestName] = useState(store.guestName);
   const [guestPhone, setGuestPhone] = useState(store.guestPhone);
-  const [guestEmail, setGuestEmail] = useState(store.guestEmail);
-  const [guestRequests, setGuestRequests] = useState('');
-
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [phoneVerified, setPhoneVerified] = useState(false);
 
   const nights = checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 1;
   const totalPrice = selectedRoom?.price ?? 0;
@@ -92,12 +81,11 @@ export function ReservationProvider({ children }: { children: React.ReactNode })
       value={{
         step, goTo,
         checkIn, checkOut, setCheckIn, setCheckOut,
-        adults, childrenCount, setAdults, setChildrenCount,
+        adults, setAdults,
         selectedRoom, setSelectedRoom,
         storeData, setStoreData,
-        guestName, guestPhone, guestEmail, guestRequests,
-        setGuestName, setGuestPhone, setGuestEmail, setGuestRequests,
-        paymentMethod, setPaymentMethod,
+        guestName, guestPhone, phoneVerified,
+        setGuestName, setGuestPhone, setPhoneVerified,
         nights, totalPrice,
       }}
     >

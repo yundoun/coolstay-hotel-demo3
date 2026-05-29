@@ -5,8 +5,8 @@ import { Calendar, Users, Minus, Plus } from 'lucide-react';
 
 export function StepDates() {
   const {
-    checkIn, checkOut, adults, childrenCount,
-    setCheckIn, setCheckOut, setAdults, setChildrenCount,
+    checkIn, checkOut, adults,
+    setCheckIn, setCheckOut, setAdults,
     goTo,
   } = useReservationContext();
 
@@ -33,7 +33,15 @@ export function StepDates() {
             <input
               type="date"
               value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
+              onChange={(e) => {
+                const newCheckIn = e.target.value;
+                setCheckIn(newCheckIn);
+                if (newCheckIn) {
+                  const next = new Date(newCheckIn);
+                  next.setDate(next.getDate() + 1);
+                  setCheckOut(next.toISOString().split('T')[0]);
+                }
+              }}
               min={new Date().toISOString().split('T')[0]}
               className="w-full h-12 px-4 border border-neutral-200 rounded-lg text-sm bg-white focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10"
             />
@@ -59,7 +67,6 @@ export function StepDates() {
             인원
           </label>
           <CounterRow label="성인" value={adults} min={1} max={6} onChange={setAdults} />
-          <CounterRow label="아동" value={childrenCount} min={0} max={4} onChange={setChildrenCount} />
         </div>
       </div>
 
