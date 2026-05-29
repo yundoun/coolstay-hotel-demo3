@@ -44,7 +44,7 @@ export function StepRoom() {
             >
               <div className="relative w-full sm:w-[160px] aspect-[16/10] rounded-md overflow-hidden shrink-0 bg-neutral-100">
                 <Image
-                  src={room.image}
+                  src={room.image ?? "/hotels/set-01/rooms/standard.jpg"}
                   alt={room.name}
                   fill
                   className="object-cover"

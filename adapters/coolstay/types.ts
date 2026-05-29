@@ -31,13 +31,14 @@ export type StoreInfo = {
 
 export type ApiRoom = {
   itemKey: string;
+  packageKey: string;
   name: string;
   nameEn: string;
   description: string;
   maxGuests: number;
   size: number;
   bedType: string;
-  image: string;
+  image: string | null;
   images: { url: string; thumbUrl: string }[];
   price: number;
   dailyPrices: number[];
