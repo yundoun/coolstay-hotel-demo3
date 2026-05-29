@@ -1,28 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { useReservationStore } from '@/lib/reservation-store';
-import { siteConfig } from '@/hotel-data';
-import { formatPrice, nightsBetween } from '@/domain/shared/utils';
+import { useReservation } from '@/adapters/zustand/reservation-store';
+import { useStoreInfo } from '@/application/hooks/useStoreInfo';
+import { formatPrice } from '@/domain/shared/utils';
 import { Container } from '@/components/ui/container';
 import { CheckCircle, Copy, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
 export function CompleteClient() {
   const {
-    bookingNumber, selectedRoom, checkIn, checkOut,
-    adults, children, guestInfo, reset,
-  } = useReservationStore();
+    reservationNumber, apiRoom, checkIn, checkOut,
+    adults, guestName, guestEmail, reset,
+  } = useReservation();
 
+  const { data: storeInfo } = useStoreInfo();
   const [copied, setCopied] = useState(false);
 
-  const nights =
-    checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 1;
-  const totalPrice = Math.round((selectedRoom?.price || 0) * nights * 1.1);
+  const totalPrice = apiRoom?.price ?? 0;
+  const storeName = storeInfo?.name ?? apiRoom?.storeName ?? '';
 
   const handleCopy = () => {
-    if (bookingNumber) {
-      navigator.clipboard.writeText(bookingNumber);
+    if (reservationNumber) {
+      navigator.clipboard.writeText(reservationNumber);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -37,11 +37,11 @@ export function CompleteClient() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-neutral-900 mb-2">예약이 완료되었습니다</h1>
-            <p className="text-neutral-500">예약 확인 메일이 {guestInfo?.email}로 발송됩니다.</p>
+            {guestEmail && <p className="text-neutral-500">예약 확인 메일이 {guestEmail}로 발송됩니다.</p>}
           </div>
           <div className="inline-flex items-center gap-3 bg-neutral-50 px-6 py-3 rounded-lg">
             <span className="text-sm text-neutral-500">예약번호</span>
-            <span className="font-barlow text-lg font-bold text-neutral-900 tracking-wider">{bookingNumber}</span>
+            <span className="font-barlow text-lg font-bold text-neutral-900 tracking-wider">{reservationNumber}</span>
             <button onClick={handleCopy} className="text-neutral-400 hover:text-neutral-600 transition-colors">
               <Copy className="w-4 h-4" />
             </button>
@@ -52,12 +52,12 @@ export function CompleteClient() {
         <div className="mt-12 border border-neutral-200 rounded-lg p-6 space-y-4">
           <h3 className="font-semibold text-neutral-900 text-lg">예약 상세</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div><p className="text-neutral-400 mb-1">호텔</p><p className="font-medium text-neutral-800">{siteConfig.name}</p></div>
-            <div><p className="text-neutral-400 mb-1">객실</p><p className="font-medium text-neutral-800">{selectedRoom?.name}</p></div>
+            <div><p className="text-neutral-400 mb-1">호텔</p><p className="font-medium text-neutral-800">{storeName}</p></div>
+            <div><p className="text-neutral-400 mb-1">객실</p><p className="font-medium text-neutral-800">{apiRoom?.roomName}</p></div>
             <div><p className="text-neutral-400 mb-1">체크인</p><p className="font-medium text-neutral-800">{checkIn}</p></div>
             <div><p className="text-neutral-400 mb-1">체크아웃</p><p className="font-medium text-neutral-800">{checkOut}</p></div>
-            <div><p className="text-neutral-400 mb-1">인원</p><p className="font-medium text-neutral-800">성인 {adults}명{children > 0 ? `, 아동 ${children}명` : ''}</p></div>
-            <div><p className="text-neutral-400 mb-1">예약자</p><p className="font-medium text-neutral-800">{guestInfo?.name}</p></div>
+            <div><p className="text-neutral-400 mb-1">인원</p><p className="font-medium text-neutral-800">성인 {adults}명</p></div>
+            <div><p className="text-neutral-400 mb-1">예약자</p><p className="font-medium text-neutral-800">{guestName}</p></div>
           </div>
           <div className="border-t border-neutral-200 pt-4 flex justify-between items-center">
             <span className="font-semibold text-neutral-900">총 결제 금액</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useReservation } from './reservation-context';
+import { useReservationContext } from './reservation-context';
 import { StepIndicator } from './step-indicator';
 import { StepDates } from './steps/step-dates';
 import { StepRoom } from './steps/step-room';
@@ -10,7 +10,7 @@ import { Container } from '@/components/ui/container';
 import { Reveal } from '@/components/ui/reveal';
 
 export function InlineReservation() {
-  const { step } = useReservation();
+  const { step } = useReservationContext();
 
   return (
     <section id="reservation" className="py-24 lg:py-32 bg-neutral-50">

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchGuestReservation } from "@/adapters/coolstay/client";
+import { toBookingItem } from "@/adapters/coolstay/mappers";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -15,7 +16,8 @@ export async function GET(request: Request) {
 
   try {
     const result = await fetchGuestReservation(bookId, phone);
-    const books = result.book ? [result.book] : (result.books ?? []);
+    const rawBooks = result.book ? [result.book] : (result.books ?? []);
+    const books = rawBooks.map(toBookingItem);
     return NextResponse.json({ books });
   } catch (e) {
     console.error("[reservation lookup] error:", e);

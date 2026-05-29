@@ -1,11 +1,11 @@
 'use client';
 
-import { useReservation, STEPS, Step } from './reservation-context';
+import { useReservationContext, STEPS, Step } from './reservation-context';
 import { cn } from '@/domain/shared/utils';
 import { Check } from 'lucide-react';
 
 export function StepIndicator() {
-  const { step, goTo } = useReservation();
+  const { step, goTo } = useReservationContext();
 
   return (
     <div className="flex items-center justify-center gap-0 mb-12">

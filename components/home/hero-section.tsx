@@ -2,24 +2,32 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { siteConfig } from '@/hotel-data';
+import { useStoreInfo } from '@/application/hooks/useStoreInfo';
 
 export function HeroSection() {
+  const { data } = useStoreInfo();
+
   const scrollToGreeting = () => {
     const el = document.getElementById('greeting');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const heroImage = data?.images?.[0]?.url ?? '';
+  const name = data?.name ?? '';
+  const nameEn = data?.nameEn ?? '';
+
   return (
     <section id="hero" className="relative h-screen min-h-[600px] max-h-[900px]">
-      <Image
-        src={siteConfig.heroImages[0]}
-        alt={siteConfig.name}
-        fill
-        className="object-cover"
-        priority
-        sizes="100vw"
-      />
+      {heroImage && (
+        <Image
+          src={heroImage}
+          alt={name}
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+        />
+      )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/50" />
 
       <div className="relative z-10 h-full flex flex-col items-center justify-end pb-24 text-center px-6">
@@ -29,13 +37,13 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           <p className="font-barlow text-sm tracking-[0.35em] text-white/60 uppercase mb-4">
-            {siteConfig.city}
+            {data?.address?.split(' ').slice(0, 2).join(' ') ?? ''}
           </p>
           <h1 className="font-barlow text-4xl md:text-6xl lg:text-7xl font-bold tracking-wider text-white mb-4">
-            {siteConfig.nameEn}
+            {nameEn || name}
           </h1>
           <p className="text-base md:text-lg text-white/70 max-w-md mx-auto mb-10 leading-relaxed">
-            {siteConfig.shortConcept}
+            {name}
           </p>
           <button
             onClick={scrollToGreeting}

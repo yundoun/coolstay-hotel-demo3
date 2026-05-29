@@ -1,11 +1,9 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { GuestInfo } from '@/domain/reservation/types';
-import type { ApiRoom } from '@/adapters/coolstay/types';
+import { useReservation as useReservationStore } from '@/adapters/zustand/reservation-store';
+import type { ApiRoom, RoomsResponse } from '@/adapters/coolstay/types';
 import { nightsBetween } from '@/domain/shared/utils';
-import { useReservationStore } from '@/lib/reservation-store';
 
 export type Step = 1 | 2 | 3 | 4;
 
@@ -32,43 +30,53 @@ interface ReservationContextValue {
 
   selectedRoom: ApiRoom | null;
   setSelectedRoom: (room: ApiRoom) => void;
+  storeData: RoomsResponse | null;
+  setStoreData: (data: RoomsResponse | null) => void;
 
-  guestInfo: GuestInfo | null;
-  setGuestInfo: (info: GuestInfo) => void;
+  guestName: string;
+  guestPhone: string;
+  guestEmail: string;
+  guestRequests: string;
+  setGuestName: (v: string) => void;
+  setGuestPhone: (v: string) => void;
+  setGuestEmail: (v: string) => void;
+  setGuestRequests: (v: string) => void;
 
   paymentMethod: string;
   setPaymentMethod: (v: string) => void;
 
   nights: number;
   totalPrice: number;
-
-  handleComplete: () => void;
 }
 
 const ReservationContext = createContext<ReservationContextValue | null>(null);
 
-export function useReservation() {
+export function useReservationContext() {
   const ctx = useContext(ReservationContext);
-  if (!ctx) throw new Error('useReservation must be used within ReservationProvider');
+  if (!ctx) throw new Error('useReservationContext must be used within ReservationProvider');
   return ctx;
 }
 
 export function ReservationProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const store = useReservationStore();
 
   const [step, setStep] = useState<Step>(1);
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
-  const [adults, setAdults] = useState(2);
+  const [checkIn, setCheckIn] = useState(store.checkIn);
+  const [checkOut, setCheckOut] = useState(store.checkOut);
+  const [adults, setAdults] = useState(store.adults);
   const [childrenCount, setChildrenCount] = useState(0);
   const [selectedRoom, setSelectedRoom] = useState<ApiRoom | null>(null);
-  const [guestInfo, setGuestInfo] = useState<GuestInfo | null>(null);
+  const [storeData, setStoreData] = useState<RoomsResponse | null>(null);
+
+  const [guestName, setGuestName] = useState(store.guestName);
+  const [guestPhone, setGuestPhone] = useState(store.guestPhone);
+  const [guestEmail, setGuestEmail] = useState(store.guestEmail);
+  const [guestRequests, setGuestRequests] = useState('');
+
   const [paymentMethod, setPaymentMethod] = useState('card');
 
-  const nights =
-    checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 1;
-  const totalPrice = (selectedRoom?.price || 0) * nights;
+  const nights = checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 1;
+  const totalPrice = selectedRoom?.price ?? 0;
 
   const goTo = useCallback((s: Step) => {
     setStep(s);
@@ -79,16 +87,6 @@ export function ReservationProvider({ children }: { children: React.ReactNode })
     }
   }, []);
 
-  const handleComplete = useCallback(() => {
-    if (!selectedRoom || !guestInfo) return;
-    store.setDates(checkIn, checkOut);
-    store.setGuests(adults, childrenCount);
-    store.selectRoom(selectedRoom);
-    store.setGuestInfo(guestInfo);
-    store.complete();
-    router.push('/reservation/complete');
-  }, [store, router, checkIn, checkOut, adults, childrenCount, selectedRoom, guestInfo]);
-
   return (
     <ReservationContext.Provider
       value={{
@@ -96,10 +94,11 @@ export function ReservationProvider({ children }: { children: React.ReactNode })
         checkIn, checkOut, setCheckIn, setCheckOut,
         adults, childrenCount, setAdults, setChildrenCount,
         selectedRoom, setSelectedRoom,
-        guestInfo, setGuestInfo,
+        storeData, setStoreData,
+        guestName, guestPhone, guestEmail, guestRequests,
+        setGuestName, setGuestPhone, setGuestEmail, setGuestRequests,
         paymentMethod, setPaymentMethod,
         nights, totalPrice,
-        handleComplete,
       }}
     >
       {children}

@@ -11,11 +11,13 @@ export async function GET() {
       .map(toRoomType)
       .filter(Boolean) as NonNullable<ReturnType<typeof toRoomType>>[];
 
-    const storeImages = (motel.images ?? []).map((img: any) => ({
-      url: img.url as string,
-      thumbUrl: img.thumb_url as string,
-      description: (img.description ?? "") as string,
-    }));
+    const storeImages = (motel.images ?? []).map(
+      (img: { url: string; thumb_url: string; description?: string }) => ({
+        url: img.url,
+        thumbUrl: img.thumb_url,
+        description: img.description ?? "",
+      }),
+    );
 
     const info: StoreInfo = {
       motelKey: motel.key,

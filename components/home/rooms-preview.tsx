@@ -4,17 +4,11 @@ import Image from 'next/image';
 import { formatPrice } from '@/domain/shared/utils';
 import { Reveal } from '@/components/ui/reveal';
 import { Maximize2, BedDouble, Users } from 'lucide-react';
-import type { StoreInfo } from '@/adapters/coolstay/types';
-import { useEffect, useState } from 'react';
+import { useStoreInfo } from '@/application/hooks/useStoreInfo';
 
 export function RoomsPreview() {
-  const [rooms, setRooms] = useState<StoreInfo['rooms']>([]);
-
-  useEffect(() => {
-    fetch('/api/store/info')
-      .then((r) => r.json())
-      .then((data: StoreInfo) => setRooms(data.rooms));
-  }, []);
+  const { data, loading } = useStoreInfo();
+  const rooms = data?.rooms ?? [];
 
   const scrollToReservation = () => {
     const el = document.getElementById('reservation');
@@ -23,6 +17,8 @@ export function RoomsPreview() {
       window.scrollTo({ top: offset, behavior: 'smooth' });
     }
   };
+
+  if (loading || rooms.length === 0) return null;
 
   return (
     <section id="rooms" className="py-24 lg:py-32 bg-neutral-50">
@@ -43,53 +39,65 @@ export function RoomsPreview() {
             <Reveal key={room.itemKey} delay={0.1 + i * 0.08}>
               <div className="group">
                 <div className="relative aspect-[16/10] rounded-sm overflow-hidden mb-5 bg-neutral-200">
-                  <Image
-                    src={room.images[0]?.url || ''}
-                    alt={room.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 560px"
-                  />
+                  {room.images[0]?.url && (
+                    <Image
+                      src={room.images[0].url}
+                      alt={room.name}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 560px"
+                    />
+                  )}
                 </div>
 
                 <div className="mb-3">
                   <h3 className="text-lg font-semibold text-neutral-900 mb-0.5">
                     {room.name}
                   </h3>
-                  <p className="font-barlow text-xs tracking-wider text-neutral-400 uppercase">
-                    {room.nameEn}
-                  </p>
+                  {room.nameEn && (
+                    <p className="font-barlow text-xs tracking-wider text-neutral-400 uppercase">
+                      {room.nameEn}
+                    </p>
+                  )}
                 </div>
 
-                <p className="text-sm text-neutral-500 leading-relaxed mb-4 line-clamp-2">
-                  {room.description}
-                </p>
+                {room.description && (
+                  <p className="text-sm text-neutral-500 leading-relaxed mb-4 line-clamp-2">
+                    {room.description}
+                  </p>
+                )}
 
                 <div className="flex flex-wrap gap-4 text-sm text-neutral-500 mb-4">
-                  <span className="flex items-center gap-1">
-                    <Maximize2 className="w-3.5 h-3.5 text-neutral-400" />
-                    {room.size}m²
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <BedDouble className="w-3.5 h-3.5 text-neutral-400" />
-                    {room.bedType}
-                  </span>
+                  {room.size > 0 && (
+                    <span className="flex items-center gap-1">
+                      <Maximize2 className="w-3.5 h-3.5 text-neutral-400" />
+                      {room.size}m²
+                    </span>
+                  )}
+                  {room.bedType && (
+                    <span className="flex items-center gap-1">
+                      <BedDouble className="w-3.5 h-3.5 text-neutral-400" />
+                      {room.bedType}
+                    </span>
+                  )}
                   <span className="flex items-center gap-1">
                     <Users className="w-3.5 h-3.5 text-neutral-400" />
                     최대 {room.maxGuests}인
                   </span>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5 mb-5">
-                  {room.features.map((f) => (
-                    <span
-                      key={f}
-                      className="text-xs text-neutral-500 bg-white px-2.5 py-1 rounded"
-                    >
-                      {f}
-                    </span>
-                  ))}
-                </div>
+                {room.features.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-5">
+                    {room.features.map((f) => (
+                      <span
+                        key={f}
+                        className="text-xs text-neutral-500 bg-white px-2.5 py-1 rounded"
+                      >
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
                   <p>

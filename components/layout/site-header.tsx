@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/domain/shared/utils';
 import { Menu, X } from 'lucide-react';
+import { useStoreInfo } from '@/application/hooks/useStoreInfo';
 
 const NAV_ITEMS = [
   { href: '#greeting', label: '인사말' },
@@ -17,6 +18,9 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { data } = useStoreInfo();
+
+  const nameEn = data?.nameEn || data?.name || '';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -26,7 +30,6 @@ export function SiteHeader() {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (pathname !== '/') {
-      // 다른 페이지에서는 홈으로 이동 후 해당 섹션으로
       return;
     }
     e.preventDefault();
@@ -65,7 +68,7 @@ export function SiteHeader() {
                 scrolled ? 'text-neutral-900' : 'text-white'
               )}
             >
-              STAY ONDA
+              {nameEn}
             </span>
           </a>
 

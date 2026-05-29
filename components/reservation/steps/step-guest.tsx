@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useReservation } from '../reservation-context';
+import { useReservationContext } from '../reservation-context';
 
 const guestSchema = z.object({
   name: z.string().min(2, '이름을 입력해주세요'),
@@ -21,7 +21,7 @@ const inputClass =
   'w-full h-12 px-4 border border-neutral-200 rounded-lg text-sm bg-white focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10';
 
 export function StepGuest() {
-  const { guestInfo, setGuestInfo, goTo } = useReservation();
+  const { guestName, guestPhone, guestEmail, guestRequests, setGuestName, setGuestPhone, setGuestEmail, setGuestRequests, goTo } = useReservationContext();
 
   const {
     register,
@@ -30,20 +30,18 @@ export function StepGuest() {
   } = useForm<GuestForm>({
     resolver: zodResolver(guestSchema),
     defaultValues: {
-      name: guestInfo?.name || '',
-      phone: guestInfo?.phone || '',
-      email: guestInfo?.email || '',
-      requests: guestInfo?.requests || '',
+      name: guestName || '',
+      phone: guestPhone || '',
+      email: guestEmail || '',
+      requests: guestRequests || '',
     },
   });
 
   const onValid = (data: GuestForm) => {
-    setGuestInfo({
-      name: data.name,
-      phone: data.phone,
-      email: data.email,
-      requests: data.requests || '',
-    });
+    setGuestName(data.name);
+    setGuestPhone(data.phone);
+    setGuestEmail(data.email);
+    setGuestRequests(data.requests || '');
     goTo(4);
   };
 

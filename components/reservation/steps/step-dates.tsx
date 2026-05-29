@@ -1,6 +1,6 @@
 'use client';
 
-import { useReservation } from '../reservation-context';
+import { useReservationContext } from '../reservation-context';
 import { Calendar, Users, Minus, Plus } from 'lucide-react';
 
 export function StepDates() {
@@ -8,7 +8,7 @@ export function StepDates() {
     checkIn, checkOut, adults, childrenCount,
     setCheckIn, setCheckOut, setAdults, setChildrenCount,
     goTo,
-  } = useReservation();
+  } = useReservationContext();
 
   const canProceed = checkIn && checkOut && checkIn < checkOut;
 

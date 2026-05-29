@@ -1,25 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useReservation } from '../reservation-context';
-import { formatPrice, cn } from '@/domain/shared/utils';
-import type { ApiRoom, RoomsResponse } from '@/adapters/coolstay/types';
+import { useReservationContext } from '../reservation-context';
+import { useApiRooms } from '@/application/hooks/useApiRooms';
+import { formatPrice, cn, nightsBetween } from '@/domain/shared/utils';
+import type { ApiRoom } from '@/adapters/coolstay/types';
 import { Maximize2, BedDouble, Users, Check } from 'lucide-react';
 
 export function StepRoom() {
-  const { selectedRoom, setSelectedRoom, checkIn, checkOut, goTo } = useReservation();
-  const [rooms, setRooms] = useState<ApiRoom[]>([]);
+  const { selectedRoom, setSelectedRoom, setStoreData, checkIn, checkOut, goTo } = useReservationContext();
+  const nights = checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 0;
+  const { storeData, loading, error } = useApiRooms(checkIn, checkOut, nights);
 
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (checkIn) params.set('checkIn', checkIn);
-    if (checkOut) params.set('checkOut', checkOut);
-
-    fetch(`/api/store/rooms?${params}`)
-      .then((r) => r.json())
-      .then((data: RoomsResponse) => setRooms(data.rooms));
-  }, [checkIn, checkOut]);
+  const handleSelect = (room: ApiRoom) => {
+    setSelectedRoom(room);
+    if (storeData) setStoreData(storeData);
+  };
 
   return (
     <div className="space-y-8">
@@ -28,13 +24,20 @@ export function StepRoom() {
         <p className="text-sm text-neutral-500">날짜에 맞는 객실과 요금을 확인하세요.</p>
       </div>
 
+      {loading && (
+        <div className="py-12 text-center text-neutral-400">객실 정보를 불러오는 중...</div>
+      )}
+      {error && (
+        <div className="py-12 text-center text-red-500">{error}</div>
+      )}
+
       <div className="space-y-4">
-        {rooms.map((room) => {
+        {(storeData?.rooms ?? []).map((room) => {
           const isSelected = selectedRoom?.itemKey === room.itemKey;
           return (
             <button
               key={room.itemKey}
-              onClick={() => setSelectedRoom(room)}
+              onClick={() => handleSelect(room)}
               className={cn(
                 'w-full text-left flex flex-col sm:flex-row gap-4 p-4 border rounded-lg transition-all bg-white',
                 isSelected
@@ -43,13 +46,15 @@ export function StepRoom() {
               )}
             >
               <div className="relative w-full sm:w-[160px] aspect-[16/10] rounded-md overflow-hidden shrink-0 bg-neutral-100">
-                <Image
-                  src={room.image ?? "/hotels/set-01/rooms/standard.jpg"}
-                  alt={room.name}
-                  fill
-                  className="object-cover"
-                  sizes="160px"
-                />
+                {room.image && (
+                  <Image
+                    src={room.image}
+                    alt={room.name}
+                    fill
+                    className="object-cover"
+                    sizes="160px"
+                  />
+                )}
               </div>
               <div className="flex-1 flex flex-col justify-between min-w-0">
                 <div>
@@ -58,12 +63,16 @@ export function StepRoom() {
                     {isSelected && <Check className="w-4 h-4 text-neutral-900" />}
                   </div>
                   <div className="flex gap-3 text-xs text-neutral-500 mb-2">
-                    <span className="flex items-center gap-1">
-                      <Maximize2 className="w-3 h-3" />{room.size}m²
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <BedDouble className="w-3 h-3" />{room.bedType}
-                    </span>
+                    {room.size > 0 && (
+                      <span className="flex items-center gap-1">
+                        <Maximize2 className="w-3 h-3" />{room.size}m²
+                      </span>
+                    )}
+                    {room.bedType && (
+                      <span className="flex items-center gap-1">
+                        <BedDouble className="w-3 h-3" />{room.bedType}
+                      </span>
+                    )}
                     <span className="flex items-center gap-1">
                       <Users className="w-3 h-3" />최대 {room.maxGuests}인
                     </span>
