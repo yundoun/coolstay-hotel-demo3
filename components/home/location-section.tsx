@@ -1,7 +1,7 @@
 import { siteConfig } from '@/hotel-data';
 import { Reveal } from '@/components/ui/reveal';
 import { Container } from '@/components/ui/container';
-import { MapPin, Phone, Mail, Clock, Car } from 'lucide-react';
+import { MapPin, Phone, Mail, Car } from 'lucide-react';
 
 export function LocationSection() {
   const { directions } = siteConfig;
@@ -61,16 +61,6 @@ export function LocationSection() {
                   </div>
                 </div>
               )}
-
-              <div className="flex items-start gap-3">
-                <Clock className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-neutral-900 mb-1">이용 시간</p>
-                  <p className="text-sm text-neutral-500">
-                    체크인 {siteConfig.checkInTime} &middot; 체크아웃 {siteConfig.checkOutTime}
-                  </p>
-                </div>
-              </div>
 
               {directions.parkingInfo && (
                 <div className="flex items-start gap-3">
