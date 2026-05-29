@@ -30,6 +30,8 @@ export type ReservationState = {
   guestPhone: string;
   guestEmail: string;
   phoneVerified: boolean;
+  smsAuthKey: string;
+  smsAuthCode: string;
   // Step 4 outcome
   reservationNumber: string | null;
   // Actions
@@ -40,6 +42,7 @@ export type ReservationState = {
   setApiRoom: (room: ApiRoomSelection) => void;
   clearApiRoom: () => void;
   setPhoneVerified: (v: boolean) => void;
+  setSmsAuth: (key: string, code: string) => void;
   setGuestInfo: (info: { name: string; phone: string; email: string }) => void;
   setReservationNumber: (n: string) => void;
   reset: () => void;
@@ -59,6 +62,8 @@ const INITIAL_STATE = {
   guestPhone: "",
   guestEmail: "",
   phoneVerified: false,
+  smsAuthKey: "",
+  smsAuthCode: "",
   reservationNumber: null as string | null,
 } as const;
 
@@ -73,6 +78,7 @@ export const useReservation = create<ReservationState>()(
       setApiRoom: (room) => set({ apiRoom: room }),
       clearApiRoom: () => set({ apiRoom: null }),
       setPhoneVerified: (v) => set({ phoneVerified: v }),
+      setSmsAuth: (key, code) => set({ smsAuthKey: key, smsAuthCode: code }),
       setGuestInfo: (info) =>
         set({ guestName: info.name, guestPhone: info.phone, guestEmail: info.email }),
       setReservationNumber: (n) => set({ reservationNumber: n }),

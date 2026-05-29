@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useReservationContext } from '../reservation-context';
+import { usePhoneVerification } from '@/application/hooks/usePhoneVerification';
+import { useReservation as useReservationStore } from '@/adapters/zustand/reservation-store';
 
 const inputClass =
   'w-full h-12 px-4 border border-neutral-200 rounded-lg text-sm bg-white focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10';
@@ -14,41 +16,36 @@ export function StepGuest() {
     goTo,
   } = useReservationContext();
 
-  const [codeSent, setCodeSent] = useState(false);
+  const store = useReservationStore();
+  const {
+    status, remaining, formatRemaining,
+    error: smsError, send, verify, resetVerification, authKey,
+  } = usePhoneVerification();
+
   const [verifyCode, setVerifyCode] = useState('');
-  const [timer, setTimer] = useState(0);
-  const [sending, setSending] = useState(false);
 
   const phoneValid = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/.test(guestPhone.replace(/-/g, '') ? guestPhone : '');
+  const codeSent = status === 'sent' || status === 'verifying' || status === 'expired';
+  const isSending = status === 'sending';
+  const isVerifying = status === 'verifying';
+  const isExpired = status === 'expired';
 
   const handleSendCode = () => {
     if (!phoneValid) return;
-    setSending(true);
-    // UI only - 실제 발송 로직은 추후 연동
-    setTimeout(() => {
-      setCodeSent(true);
-      setSending(false);
-      setTimer(180);
-      const interval = setInterval(() => {
-        setTimer((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }, 500);
+    send(guestPhone);
   };
 
-  const handleVerify = () => {
-    if (verifyCode.length < 4) return;
-    // UI only - 실제 검증 로직은 추후 연동
-    setPhoneVerified(true);
+  const handleVerify = async () => {
+    if (verifyCode.length < 6) return;
+    await verify(verifyCode, guestPhone);
   };
 
-  const formatTimer = (s: number) =>
-    `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  useEffect(() => {
+    if (status === 'verified' && !phoneVerified) {
+      setPhoneVerified(true);
+      store.setSmsAuth(authKey ?? '', verifyCode);
+    }
+  }, [status, phoneVerified, setPhoneVerified, store, authKey, verifyCode]);
 
   const canProceed = guestName.trim().length >= 2 && phoneVerified;
 
@@ -91,8 +88,9 @@ export function StepGuest() {
                 setGuestPhone(e.target.value);
                 if (phoneVerified) {
                   setPhoneVerified(false);
-                  setCodeSent(false);
+                  resetVerification();
                   setVerifyCode('');
+                  store.setSmsAuth('', '');
                 }
               }}
               placeholder="010-1234-5678"
@@ -103,10 +101,10 @@ export function StepGuest() {
               <button
                 type="button"
                 onClick={handleSendCode}
-                disabled={!phoneValid || sending || (codeSent && timer > 0)}
+                disabled={!phoneValid || isSending || (codeSent && remaining > 0)}
                 className="h-12 px-5 text-sm font-medium whitespace-nowrap border border-neutral-900 text-neutral-900 rounded-lg hover:bg-neutral-900 hover:text-white disabled:border-neutral-200 disabled:text-neutral-400 disabled:hover:bg-white transition-colors"
               >
-                {sending ? '발송 중...' : codeSent ? '재발송' : '인증번호 발송'}
+                {isSending ? '발송 중...' : codeSent ? '재발송' : '인증번호 발송'}
               </button>
             ) : (
               <div className="h-12 px-4 flex items-center text-sm font-medium text-green-600 border border-green-200 rounded-lg bg-green-50">
@@ -125,24 +123,27 @@ export function StepGuest() {
                   maxLength={6}
                   className={inputClass}
                 />
-                {timer > 0 && (
+                {remaining > 0 && (
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-red-500 font-medium">
-                    {formatTimer(timer)}
+                    {formatRemaining}
                   </span>
                 )}
               </div>
               <button
                 type="button"
                 onClick={handleVerify}
-                disabled={verifyCode.length < 4 || timer === 0}
+                disabled={verifyCode.length < 6 || isExpired || isVerifying}
                 className="h-12 px-5 text-sm font-medium whitespace-nowrap bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 disabled:bg-neutral-200 disabled:text-neutral-400 transition-colors"
               >
-                확인
+                {isVerifying ? '확인 중...' : '확인'}
               </button>
             </div>
           )}
 
-          {codeSent && timer === 0 && !phoneVerified && (
+          {smsError && (
+            <p className="text-xs text-red-500">{smsError}</p>
+          )}
+          {isExpired && !smsError && (
             <p className="text-xs text-red-500">인증 시간이 만료되었습니다. 다시 발송해주세요.</p>
           )}
         </div>

@@ -126,5 +126,5 @@ export function usePhoneVerification() {
       ? `${String(Math.floor(remaining / 60)).padStart(2, "0")}:${String(remaining % 60).padStart(2, "0")}`
       : "";
 
-  return { status, remaining, formatRemaining, error, send, verify, resetVerification };
+  return { status, remaining, formatRemaining, error, send, verify, resetVerification, authKey: authKeyRef.current };
 }
