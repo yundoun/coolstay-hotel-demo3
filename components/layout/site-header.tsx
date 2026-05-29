@@ -7,11 +7,8 @@ import { Menu, X } from 'lucide-react';
 import { siteConfig } from '@/hotel-data';
 
 const NAV_ITEMS = [
-  { href: '#greeting', label: '인사말' },
-  { href: '#about', label: '호텔 소개' },
   { href: '#rooms', label: '객실' },
   { href: '#reservation', label: '예약' },
-  { href: '#location', label: '오시는 길' },
   { href: '/reservation/lookup', label: '예약조회', isPage: true },
 ];
 
