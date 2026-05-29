@@ -64,7 +64,13 @@ export function CompleteClient() {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/reservation/lookup"
+            className="inline-flex items-center justify-center gap-2 h-12 px-8 border border-neutral-300 text-neutral-700 font-semibold hover:bg-neutral-50 transition-colors"
+          >
+            예약 조회
+          </Link>
           <Link
             href="/"
             onClick={() => reset()}

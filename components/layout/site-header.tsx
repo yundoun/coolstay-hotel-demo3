@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: '#rooms', label: '객실' },
   { href: '#reservation', label: '예약' },
   { href: '#location', label: '오시는 길' },
+  { href: '/reservation/lookup', label: '예약조회', isPage: true },
 ];
 
 export function SiteHeader() {
@@ -27,12 +28,16 @@ export function SiteHeader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: typeof NAV_ITEMS[number]) => {
+    if (item.isPage) {
+      setMobileOpen(false);
+      return; // let browser navigate
+    }
     if (pathname !== '/') {
       return;
     }
     e.preventDefault();
-    const id = href.replace('#', '');
+    const id = item.href.replace('#', '');
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -76,8 +81,8 @@ export function SiteHeader() {
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.label}
-                href={pathname === '/' ? item.href : `/${item.href}`}
-                onClick={(e) => handleNavClick(e, item.href)}
+                href={item.isPage ? item.href : pathname === '/' ? item.href : `/${item.href}`}
+                onClick={(e) => handleNavClick(e, item)}
                 className={cn(
                   'font-barlow text-[13px] font-semibold tracking-wider uppercase transition-colors duration-300',
                   scrolled
@@ -110,8 +115,8 @@ export function SiteHeader() {
             {NAV_ITEMS.map((item) => (
               <a
                 key={item.label}
-                href={pathname === '/' ? item.href : `/${item.href}`}
-                onClick={(e) => handleNavClick(e, item.href)}
+                href={item.isPage ? item.href : pathname === '/' ? item.href : `/${item.href}`}
+                onClick={(e) => handleNavClick(e, item)}
                 className="block py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900 border-b border-neutral-50 last:border-0"
               >
                 {item.label}
