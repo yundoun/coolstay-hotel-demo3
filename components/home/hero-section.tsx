@@ -1,33 +1,75 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '@/hotel-data';
 
+const AUTOPLAY_INTERVAL = 10_000;
+
 export function HeroSection() {
+  const images = siteConfig.heroImages.slice(0, 5);
+  const hasMultiple = images.length >= 2;
+  const [current, setCurrent] = useState(0);
+
+  const goTo = useCallback(
+    (index: number) => setCurrent(index),
+    [],
+  );
+
   const scrollToGreeting = () => {
     const el = document.getElementById('greeting');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const heroImage = siteConfig.heroImages[0] ?? '';
+  /* ── autoplay (10 s) ── */
+  useEffect(() => {
+    if (!hasMultiple) return;
+
+    const tick = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % images.length);
+    }, AUTOPLAY_INTERVAL);
+
+    const onVisibility = () => {
+      if (document.hidden) clearInterval(tick);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      clearInterval(tick);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [hasMultiple, images.length]);
+
   const name = siteConfig.name;
   const nameEn = siteConfig.nameEn;
 
   return (
     <section id="hero" className="relative h-screen min-h-[600px] max-h-[900px]">
-      {heroImage && (
-        <Image
-          src={heroImage}
-          alt={name}
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/50" />
+      {/* ── images ── */}
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={current}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={images[current]}
+            alt={`${name} ${current + 1}`}
+            fill
+            className="object-cover"
+            priority={current === 0}
+            sizes="100vw"
+          />
+        </motion.div>
+      </AnimatePresence>
 
+      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/50 z-[1]" />
+
+      {/* ── text ── */}
       <div className="relative z-10 h-full flex flex-col items-center justify-end pb-24 text-center px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -50,6 +92,24 @@ export function HeroSection() {
             Scroll
           </button>
         </motion.div>
+
+        {/* ── indicator dots ── */}
+        {hasMultiple && (
+          <div className="flex gap-2.5 mt-8">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`이미지 ${i + 1}로 이동`}
+                className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                  i === current
+                    ? 'bg-white scale-125'
+                    : 'bg-white/40 hover:bg-white/70'
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <motion.div
