@@ -14,28 +14,31 @@ export function useSubmitReservation() {
   const canSubmit = Boolean(s.apiRoom?.packageKey && s.guestName && s.guestPhone);
 
   const submit = async () => {
-    if (!s.apiRoom || submitting) return;
+    // getState()로 최신 스토어 값을 읽는다 (렌더 스냅샷 아님)
+    const latest = useReservation.getState();
+    if (!latest.apiRoom || submitting) return;
 
     setSubmitting(true);
     setError(null);
 
     try {
-      const { apiRoom } = s;
+      const { apiRoom } = latest;
+
       const result = await createGuestReservation({
         hotelId: apiRoom.motelKey,
         roomId: apiRoom.packageKey,
-        checkIn: s.checkIn,
-        checkOut: s.checkOut,
-        guestName: s.guestName,
-        guestPhone: s.guestPhone,
+        checkIn: latest.checkIn,
+        checkOut: latest.checkOut,
+        guestName: latest.guestName,
+        guestPhone: latest.guestPhone,
         totalPrice: apiRoom.price,
         basePrice: apiRoom.price,
         checkInTime: apiRoom.checkInTime,
         checkOutTime: apiRoom.checkOutTime,
-        smsAuthKey: s.smsAuthKey,
-        smsAuthCode: s.smsAuthCode,
+        smsAuthKey: latest.smsAuthKey,
+        smsAuthCode: latest.smsAuthCode,
       });
-      s.setReservationNumber(result.bookId);
+      latest.setReservationNumber(result.bookId);
       router.push("/reservation/complete");
     } catch (err) {
       setError(err instanceof Error ? err.message : "예약 중 오류가 발생했습니다.");
