@@ -3,7 +3,6 @@ import { GreetingSection } from '@/components/home/greeting-section';
 import { StorySection } from '@/components/home/story-section';
 import { RoomsPreview } from '@/components/home/rooms-preview';
 import { OnepageReservation } from '@/components/reservation/onepage-reservation';
-import { InfoSection } from '@/components/home/info-section';
 import { LocationSection } from '@/components/home/location-section';
 
 export default function HomePage() {
@@ -14,7 +13,6 @@ export default function HomePage() {
       <StorySection />
       <RoomsPreview />
       <OnepageReservation />
-      <InfoSection />
       <LocationSection />
     </>
   );
