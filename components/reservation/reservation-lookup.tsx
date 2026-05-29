@@ -7,6 +7,7 @@ import { Container } from '@/components/ui/container';
 import { formatPrice, cn } from '@/domain/shared/utils';
 import type { BookingItem, BookingStatus } from '@/domain/reservation/types';
 import { Search, ArrowLeft, X, Loader2, CalendarDays, User, Phone, CreditCard } from 'lucide-react';
+import { formatPhoneNumber } from '@/domain/shared/utils';
 
 const STATUS_MAP: Record<BookingStatus, { label: string; color: string }> = {
   BEFORE: { label: '예약확정', color: 'bg-neutral-900 text-white' },
@@ -79,7 +80,7 @@ export function ReservationLookup() {
               <label className="text-sm font-medium text-neutral-700">연락처</label>
               <input
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
                 placeholder="010-1234-5678"
                 className={inputClass}
               />
@@ -223,6 +224,7 @@ function BookingCard({
 }) {
   const statusInfo = STATUS_MAP[book.status] ?? STATUS_MAP.BEFORE;
   const canCancel = book.status === 'BEFORE';
+  const isCancelled = book.status === 'CANCEL';
 
   return (
     <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden">
@@ -246,11 +248,21 @@ function BookingCard({
           <p className="text-sm text-neutral-500 mt-0.5">{book.roomName}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2 text-neutral-600">
-            <CalendarDays className="w-4 h-4 text-neutral-400 shrink-0" />
-            <span>{book.checkIn} ~ {book.checkOut}</span>
+        {/* 체크인/체크아웃 */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-neutral-50 rounded-lg px-4 py-3">
+            <p className="text-xs text-neutral-400 mb-1">체크인</p>
+            <p className="text-sm font-medium text-neutral-900">{book.checkIn}</p>
+            {book.checkInTime && <p className="text-xs text-neutral-400 mt-0.5">{book.checkInTime} 이후</p>}
           </div>
+          <div className="bg-neutral-50 rounded-lg px-4 py-3">
+            <p className="text-xs text-neutral-400 mb-1">체크아웃</p>
+            <p className="text-sm font-medium text-neutral-900">{book.checkOut}</p>
+            {book.checkOutTime && <p className="text-xs text-neutral-400 mt-0.5">{book.checkOutTime} 까지</p>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center gap-2 text-neutral-600">
             <User className="w-4 h-4 text-neutral-400 shrink-0" />
             <span>{book.guestName}</span>
@@ -267,20 +279,34 @@ function BookingCard({
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 bg-neutral-50 flex items-center justify-between">
-        <div>
-          <p className="text-xs text-neutral-400">결제 금액</p>
-          <p className="text-lg font-bold text-neutral-900">₩{formatPrice(book.totalPrice)}</p>
+      {isCancelled ? (
+        <div className="px-6 py-4 bg-red-50/60 border-t border-red-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-red-400">결제 취소</p>
+              <p className="text-lg font-bold text-red-600 line-through">₩{formatPrice(book.totalPrice)}</p>
+            </div>
+            <span className="text-sm font-semibold text-red-500 bg-red-100 px-3 py-1.5 rounded-lg">
+              결제 취소 완료
+            </span>
+          </div>
         </div>
-        {canCancel && (
-          <button
-            onClick={onCancelRequest}
-            className="h-9 px-5 text-sm font-medium border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-          >
-            예약 취소
-          </button>
-        )}
-      </div>
+      ) : (
+        <div className="px-6 py-4 bg-neutral-50 flex items-center justify-between">
+          <div>
+            <p className="text-xs text-neutral-400">결제 금액</p>
+            <p className="text-lg font-bold text-neutral-900">₩{formatPrice(book.totalPrice)}</p>
+          </div>
+          {canCancel && (
+            <button
+              onClick={onCancelRequest}
+              className="h-9 px-5 text-sm font-medium border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+            >
+              예약 취소
+            </button>
+          )}
+        </div>
+      )}
 
       {cancelError && (
         <div className="px-6 py-3 bg-red-50 border-t border-red-100">

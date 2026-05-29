@@ -4,18 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Maximize2, BedDouble, Users, Clock } from 'lucide-react';
-import { formatPrice } from '@/domain/shared/utils';
-
-function formatTime(time: string): string {
-  const cleaned = time.replace(/[^0-9]/g, '');
-  if (cleaned.length >= 4) {
-    return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}`;
-  }
-  if (cleaned.length >= 2) {
-    return `${cleaned.slice(0, 2)}:00`;
-  }
-  return time;
-}
+import { formatPrice, formatTime } from '@/domain/shared/utils';
 
 export interface RoomDetailData {
   name: string;

@@ -59,6 +59,8 @@ export type BookingItem = {
   roomImage: string | null;
   checkIn: string;
   checkOut: string;
+  checkInTime: string;
+  checkOutTime: string;
   guestName: string;
   guestPhone: string;
   totalPrice: number;

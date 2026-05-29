@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useReservation } from '@/adapters/zustand/reservation-store';
 import { siteConfig } from '@/hotel-data';
-import { formatPrice } from '@/domain/shared/utils';
+import { formatPrice, formatTime } from '@/domain/shared/utils';
 import { Container } from '@/components/ui/container';
 import { CheckCircle, Copy, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
@@ -53,8 +53,16 @@ export function CompleteClient() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div><p className="text-neutral-400 mb-1">호텔</p><p className="font-medium text-neutral-800">{storeName}</p></div>
             <div><p className="text-neutral-400 mb-1">객실</p><p className="font-medium text-neutral-800">{apiRoom?.roomName}</p></div>
-            <div><p className="text-neutral-400 mb-1">체크인</p><p className="font-medium text-neutral-800">{checkIn}</p></div>
-            <div><p className="text-neutral-400 mb-1">체크아웃</p><p className="font-medium text-neutral-800">{checkOut}</p></div>
+            <div>
+              <p className="text-neutral-400 mb-1">체크인</p>
+              <p className="font-medium text-neutral-800">{checkIn}</p>
+              <p className="text-neutral-400 text-xs mt-0.5">{formatTime(apiRoom?.checkInTime)} 이후 입실</p>
+            </div>
+            <div>
+              <p className="text-neutral-400 mb-1">체크아웃</p>
+              <p className="font-medium text-neutral-800">{checkOut}</p>
+              <p className="text-neutral-400 text-xs mt-0.5">{formatTime(apiRoom?.checkOutTime)} 까지 퇴실</p>
+            </div>
             <div><p className="text-neutral-400 mb-1">인원</p><p className="font-medium text-neutral-800">성인 {adults}명</p></div>
             <div><p className="text-neutral-400 mb-1">예약자</p><p className="font-medium text-neutral-800">{guestName}</p></div>
           </div>

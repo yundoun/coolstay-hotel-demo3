@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useReservationContext } from '../reservation-context';
 import { usePhoneVerification } from '@/application/hooks/usePhoneVerification';
 import { useReservation as useReservationStore } from '@/adapters/zustand/reservation-store';
+import { formatPhoneNumber } from '@/domain/shared/utils';
 
 const inputClass =
   'w-full h-12 px-4 border border-neutral-200 rounded-lg text-sm bg-white focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10';
@@ -25,10 +26,19 @@ export function StepGuest() {
   const [verifyCode, setVerifyCode] = useState('');
 
   const phoneValid = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/.test(guestPhone.replace(/-/g, '') ? guestPhone : '');
-  const codeSent = status === 'sent' || status === 'verifying' || status === 'expired';
+  const codeSent = status === 'sent' || status === 'verifying';
   const isSending = status === 'sending';
   const isVerifying = status === 'verifying';
   const isExpired = status === 'expired';
+  const phoneLocked = codeSent || isSending || isVerifying;
+
+  // 만료 시 전체 초기화
+  useEffect(() => {
+    if (isExpired) {
+      resetVerification();
+      setVerifyCode('');
+    }
+  }, [isExpired, resetVerification]);
 
   const handleSendCode = () => {
     if (!phoneValid) return;
@@ -85,7 +95,7 @@ export function StepGuest() {
             <input
               value={guestPhone}
               onChange={(e) => {
-                setGuestPhone(e.target.value);
+                setGuestPhone(formatPhoneNumber(e.target.value));
                 if (phoneVerified) {
                   setPhoneVerified(false);
                   resetVerification();
@@ -94,8 +104,8 @@ export function StepGuest() {
                 }
               }}
               placeholder="010-1234-5678"
-              disabled={phoneVerified}
-              className={`flex-1 h-12 px-4 border border-neutral-200 rounded-lg text-sm bg-white focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 ${phoneVerified ? 'bg-neutral-50 text-neutral-500' : ''}`}
+              disabled={phoneLocked || phoneVerified}
+              className={`flex-1 h-12 px-4 border border-neutral-200 rounded-lg text-sm bg-white focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 ${phoneLocked || phoneVerified ? 'bg-neutral-50 text-neutral-500' : ''}`}
             />
             {!phoneVerified ? (
               <button
@@ -142,9 +152,6 @@ export function StepGuest() {
 
           {smsError && (
             <p className="text-xs text-red-500">{smsError}</p>
-          )}
-          {isExpired && !smsError && (
-            <p className="text-xs text-red-500">인증 시간이 만료되었습니다. 다시 발송해주세요.</p>
           )}
         </div>
 

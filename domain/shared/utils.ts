@@ -14,3 +14,18 @@ export function nightsBetween(checkIn: string, checkOut: string): number {
 export function cn(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(' ');
 }
+
+export function formatTime(time?: string): string {
+  if (!time) return '';
+  const cleaned = time.replace(/[^0-9]/g, '');
+  if (cleaned.length >= 4) return `${cleaned.slice(0, 2)}:${cleaned.slice(2, 4)}`;
+  if (cleaned.length >= 2) return `${cleaned.slice(0, 2)}:00`;
+  return time;
+}
+
+export function formatPhoneNumber(value: string): string {
+  const digits = value.replace(/[^0-9]/g, '').slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+}

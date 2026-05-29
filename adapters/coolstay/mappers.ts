@@ -1,5 +1,32 @@
 /** CoolStay upstream 응답 → 도메인 객체 변환 */
 
+import { formatPhoneNumber } from "@/domain/shared/utils";
+
+/** 유닉스 타임스탬프(초) 또는 문자열 → YYYY-MM-DD */
+function toDateStr(v: unknown): string {
+  if (!v) return "";
+  const n = Number(v);
+  if (!isNaN(n) && n > 1_000_000_000) {
+    const d = new Date(n * 1000);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return String(v);
+}
+
+/** 유닉스 타임스탬프(초) → HH:mm */
+function toTimeStr(v: unknown): string {
+  if (!v) return "";
+  const n = Number(v);
+  if (!isNaN(n) && n > 1_000_000_000) {
+    const d = new Date(n * 1000);
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  }
+  return "";
+}
+
 /** item.extras 배열 → { code: value } 맵 */
 export function parseExtras(item: any): Record<string, string> {
   const map: Record<string, string> = {};
@@ -101,10 +128,12 @@ export function toBookingItem(book: any): import("@/domain/reservation/types").B
     storeName: book.motel?.name ?? "",
     roomName: item?.name ?? "",
     roomImage: book.repr_image ?? itemImage ?? null,
-    checkIn: String(book.start_dt ?? book.startDt ?? ""),
-    checkOut: String(book.end_dt ?? book.endDt ?? ""),
+    checkIn: toDateStr(book.start_dt ?? book.startDt ?? ""),
+    checkOut: toDateStr(book.end_dt ?? book.endDt ?? ""),
+    checkInTime: toTimeStr(book.start_dt ?? book.startDt),
+    checkOutTime: toTimeStr(book.end_dt ?? book.endDt),
     guestName: book.name ?? "",
-    guestPhone: book.phone_number ?? book.phoneNumber ?? "",
+    guestPhone: formatPhoneNumber(book.phone_number ?? book.phoneNumber ?? ""),
     totalPrice: Number(book.total_price ?? book.totalPrice ?? 0),
     originPrice: Number(book.origin_price_total ?? book.originPriceTotal ?? 0),
     payment: {
@@ -116,7 +145,7 @@ export function toBookingItem(book: any): import("@/domain/reservation/types").B
     },
     refundYn: book.refund_yn === "Y" || book.refundYn === "Y",
     vehicleYn: book.vehicle_yn === "Y" || book.vehicleYn === "Y",
-    regDate: String(book.reg_dt ?? book.regDt ?? ""),
+    regDate: toDateStr(book.reg_dt ?? book.regDt ?? ""),
   };
 }
 

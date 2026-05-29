@@ -94,7 +94,7 @@ export function usePhoneVerification() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "인증번호 확인에 실패했습니다.");
+        setError("인증번호가 올바르지 않습니다.");
         setStatus("sent");
         return;
       }
@@ -104,11 +104,11 @@ export function usePhoneVerification() {
         setStatus("verified");
         setRemaining(0);
       } else {
-        setError("인증번호가 일치하지 않습니다. 다시 확인해 주세요.");
+        setError("인증번호가 올바르지 않습니다.");
         setStatus("sent");
       }
     } catch {
-      setError("네트워크 오류가 발생했습니다. 다시 시도해 주세요.");
+      setError("인증번호가 올바르지 않습니다.");
       setStatus("sent");
     }
   }, []);
