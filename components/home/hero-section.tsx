@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '@/hotel-data';
 
 const AUTOPLAY_INTERVAL = 10_000;
+const SWIPE_THRESHOLD = 50;
 
 export function HeroSection() {
   const images = siteConfig.heroImages.slice(0, 5);
@@ -17,6 +18,29 @@ export function HeroSection() {
     [],
   );
 
+  const dragStartX = useRef<number | null>(null);
+
+  const goNext = useCallback(() => {
+    setCurrent((prev) => (prev + 1) % images.length);
+  }, [images.length]);
+
+  const goPrev = useCallback(() => {
+    setCurrent((prev) => (prev - 1 + images.length) % images.length);
+  }, [images.length]);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    dragStartX.current = e.clientX;
+  }, []);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    if (dragStartX.current === null) return;
+    const diff = e.clientX - dragStartX.current;
+    dragStartX.current = null;
+    if (Math.abs(diff) < SWIPE_THRESHOLD) return;
+    if (diff < 0) goNext();
+    else goPrev();
+  }, [goNext, goPrev]);
+
   const scrollToGreeting = () => {
     const el = document.getElementById('greeting');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -26,17 +50,28 @@ export function HeroSection() {
   useEffect(() => {
     if (!hasMultiple) return;
 
-    const tick = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, AUTOPLAY_INTERVAL);
+    let tick: ReturnType<typeof setInterval> | null = null;
+
+    const start = () => {
+      if (tick) clearInterval(tick);
+      tick = setInterval(() => {
+        setCurrent((prev) => (prev + 1) % images.length);
+      }, AUTOPLAY_INTERVAL);
+    };
 
     const onVisibility = () => {
-      if (document.hidden) clearInterval(tick);
+      if (document.hidden) {
+        if (tick) { clearInterval(tick); tick = null; }
+      } else {
+        start();
+      }
     };
+
+    start();
     document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
-      clearInterval(tick);
+      if (tick) clearInterval(tick);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [hasMultiple, images.length]);
@@ -45,7 +80,12 @@ export function HeroSection() {
   const nameEn = siteConfig.nameEn;
 
   return (
-    <section id="hero" className="relative h-screen min-h-[600px] max-h-[900px]">
+    <section
+      id="hero"
+      className="relative h-screen min-h-[600px] max-h-[900px] cursor-grab active:cursor-grabbing select-none"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+    >
       {/* ── images ── */}
       <AnimatePresence initial={false}>
         <motion.div
