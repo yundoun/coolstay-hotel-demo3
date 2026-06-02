@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useReservationContext } from '../reservation-context';
+import { useReservation } from '@/adapters/zustand/reservation-store';
+import { useShallow } from 'zustand/react/shallow';
 import { usePhoneVerification } from '@/application/hooks/usePhoneVerification';
-import { useReservation as useReservationStore } from '@/adapters/zustand/reservation-store';
 import { formatPhoneNumber } from '@/domain/shared/utils';
 
 const inputClass =
@@ -14,10 +14,20 @@ export function StepGuest() {
     guestName, guestPhone,
     setGuestName, setGuestPhone,
     phoneVerified, setPhoneVerified,
-    goTo,
-  } = useReservationContext();
+    setSmsAuth, goTo,
+  } = useReservation(
+    useShallow((s) => ({
+      guestName: s.guestName,
+      guestPhone: s.guestPhone,
+      setGuestName: s.setGuestName,
+      setGuestPhone: s.setGuestPhone,
+      phoneVerified: s.phoneVerified,
+      setPhoneVerified: s.setPhoneVerified,
+      setSmsAuth: s.setSmsAuth,
+      goTo: s.goTo,
+    }))
+  );
 
-  const store = useReservationStore();
   const {
     status, remaining, formatRemaining,
     error: smsError, send, verify, resetVerification, authKey,
@@ -32,16 +42,10 @@ export function StepGuest() {
   const isExpired = status === 'expired';
   const phoneLocked = codeSent || isSending || isVerifying;
 
-  // 만료 시 전체 초기화
-  useEffect(() => {
-    if (isExpired) {
-      resetVerification();
-      setVerifyCode('');
-    }
-  }, [isExpired, resetVerification]);
-
   const handleSendCode = () => {
     if (!phoneValid) return;
+    if (isExpired) resetVerification();
+    setVerifyCode('');
     send(guestPhone);
   };
 
@@ -53,9 +57,9 @@ export function StepGuest() {
   useEffect(() => {
     if (status === 'verified' && !phoneVerified) {
       setPhoneVerified(true);
-      store.setSmsAuth(authKey ?? '', verifyCode);
+      setSmsAuth(authKey ?? '', verifyCode);
     }
-  }, [status, phoneVerified, setPhoneVerified, store, authKey, verifyCode]);
+  }, [status, phoneVerified, setPhoneVerified, setSmsAuth, authKey, verifyCode]);
 
   const canProceed = guestName.trim().length >= 2 && phoneVerified;
 
@@ -100,7 +104,7 @@ export function StepGuest() {
                   setPhoneVerified(false);
                   resetVerification();
                   setVerifyCode('');
-                  store.setSmsAuth('', '');
+                  setSmsAuth('', '');
                 }
               }}
               placeholder="010-1234-5678"

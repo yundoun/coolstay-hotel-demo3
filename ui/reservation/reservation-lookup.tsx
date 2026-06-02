@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useReservationLookup } from '@/application/hooks/useReservationLookup';
-import { Container } from '@/components/ui/container';
+import { Container } from '@/ui/ui/container';
 import { formatPrice, cn } from '@/domain/shared/utils';
 import type { BookingItem, BookingStatus } from '@/domain/reservation/types';
-import { Search, ArrowLeft, X, Loader2, CalendarDays, User, Phone, CreditCard } from 'lucide-react';
+import { Search, ArrowLeft, X, Loader2, User, Phone, CreditCard } from 'lucide-react';
 import { formatPhoneNumber } from '@/domain/shared/utils';
 
 const STATUS_MAP: Record<BookingStatus, { label: string; color: string }> = {
@@ -146,12 +146,8 @@ export function ReservationLookup() {
                 <BookingCard
                   key={book.bookId}
                   book={book}
-                  cancelling={cancelState.phase === 'loading' && cancelState.bookId === book.bookId}
                   cancelError={cancelState.phase === 'error' && cancelState.bookId === book.bookId ? cancelState.message : null}
-                  showCancelConfirm={cancelTarget === book.bookId}
                   onCancelRequest={() => setCancelTarget(book.bookId)}
-                  onCancelConfirm={() => handleCancel(book.bookId)}
-                  onCancelDismiss={() => setCancelTarget(null)}
                 />
               ))
             )}
@@ -207,20 +203,12 @@ export function ReservationLookup() {
 
 function BookingCard({
   book,
-  cancelling,
   cancelError,
-  showCancelConfirm,
   onCancelRequest,
-  onCancelConfirm,
-  onCancelDismiss,
 }: {
   book: BookingItem;
-  cancelling: boolean;
   cancelError: string | null;
-  showCancelConfirm: boolean;
   onCancelRequest: () => void;
-  onCancelConfirm: () => void;
-  onCancelDismiss: () => void;
 }) {
   const statusInfo = STATUS_MAP[book.status] ?? STATUS_MAP.BEFORE;
   const canCancel = book.status === 'BEFORE';

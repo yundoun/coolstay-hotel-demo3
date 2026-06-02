@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useReservation } from '@/adapters/zustand/reservation-store';
 import { siteConfig } from '@/hotel-data';
 import { formatPrice, formatTime } from '@/domain/shared/utils';
-import { Container } from '@/components/ui/container';
+import { Container } from '@/ui/ui/container';
 import { CheckCircle, Copy, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 

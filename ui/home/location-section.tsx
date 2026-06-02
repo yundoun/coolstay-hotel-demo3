@@ -1,6 +1,6 @@
 import { siteConfig } from '@/hotel-data';
-import { Reveal } from '@/components/ui/reveal';
-import { Container } from '@/components/ui/container';
+import { Reveal } from '@/ui/ui/reveal';
+import { Container } from '@/ui/ui/container';
 import { MapPin, Phone, Mail, Car } from 'lucide-react';
 
 export function LocationSection() {

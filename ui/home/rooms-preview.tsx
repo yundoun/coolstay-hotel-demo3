@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { formatPrice } from '@/domain/shared/utils';
-import { Reveal } from '@/components/ui/reveal';
-import { RoomDetailModal } from '@/components/ui/room-detail-modal';
-import type { RoomDetailData } from '@/components/ui/room-detail-modal';
+import { Reveal } from '@/ui/ui/reveal';
+import { RoomDetailModal } from '@/ui/ui/room-detail-modal';
+import type { RoomDetailData } from '@/ui/ui/room-detail-modal';
 import type { RoomType } from '@/adapters/coolstay/types';
 import { Maximize2, BedDouble, Users, ChevronDown, Eye, Clock } from 'lucide-react';
 import { useStoreInfo } from '@/application/hooks/useStoreInfo';

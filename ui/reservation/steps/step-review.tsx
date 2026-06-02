@@ -1,24 +1,44 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useReservationContext } from '../reservation-context';
-import { useReservation as useReservationStore } from '@/adapters/zustand/reservation-store';
+import { useState, useCallback, useMemo } from 'react';
+import { useReservation } from '@/adapters/zustand/reservation-store';
+import { useShallow } from 'zustand/react/shallow';
 import { useSubmitReservation } from '@/application/hooks/useSubmitReservation';
-import { useTerms, type Term, type RefundPolicy } from '@/application/hooks/useTerms';
+import { useTerms, type RefundPolicy } from '@/application/hooks/useTerms';
 import { siteConfig } from '@/hotel-data';
-import { formatPrice } from '@/domain/shared/utils';
+import { formatPrice, nightsBetween } from '@/domain/shared/utils';
 import { Banknote, ChevronDown, Loader2 } from 'lucide-react';
 
 const REFUND_AGREED_KEY = 'REFUND';
 
 export function StepReview() {
   const {
-    checkIn, checkOut, nights, adults,
-    selectedRoom, storeData, totalPrice,
+    checkIn, checkOut, adults,
+    selectedRoom, storeData,
     guestName, guestPhone, goTo,
-  } = useReservationContext();
+    setDates, setAdults, setRoom,
+    setGuestInfo, setApiRoom,
+  } = useReservation(
+    useShallow((s) => ({
+      checkIn: s.checkIn,
+      checkOut: s.checkOut,
+      adults: s.adults,
+      selectedRoom: s.selectedRoom,
+      storeData: s.storeData,
+      guestName: s.guestName,
+      guestPhone: s.guestPhone,
+      goTo: s.goTo,
+      setDates: s.setDates,
+      setAdults: s.setAdults,
+      setRoom: s.setRoom,
+      setGuestInfo: s.setGuestInfo,
+      setApiRoom: s.setApiRoom,
+    }))
+  );
 
-  const store = useReservationStore();
+  const nights = checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 1;
+  const totalPrice = selectedRoom?.price ?? 0;
+
   const { submit, submitting, error } = useSubmitReservation();
 
   const { terms, refundPolicies, loading: termsLoading } = useTerms({
@@ -35,10 +55,10 @@ export function StepReview() {
 
   const hasRefund = refundPolicies.length > 0;
 
-  const allKeys = [
+  const allKeys = useMemo(() => [
     ...terms.map((t) => t.code),
     ...(hasRefund ? [REFUND_AGREED_KEY] : []),
-  ];
+  ], [terms, hasRefund]);
 
   const allAgreed = allKeys.length > 0 && allKeys.every((k) => agreed[k]);
 
@@ -62,11 +82,11 @@ export function StepReview() {
   const handleComplete = () => {
     if (!selectedRoom || !storeData || !requiredAgreed) return;
 
-    store.setDates(checkIn, checkOut);
-    store.setAdults(adults);
-    store.setRoom(selectedRoom.itemKey);
-    store.setGuestInfo({ name: guestName, phone: guestPhone, email: '' });
-    store.setApiRoom({
+    setDates(checkIn, checkOut);
+    setAdults(adults);
+    setRoom(selectedRoom.itemKey);
+    setGuestInfo({ name: guestName, phone: guestPhone, email: '' });
+    setApiRoom({
       motelKey: storeData.motelKey,
       storeName: storeData.storeName,
       sitePayment: storeData.sitePayment,

@@ -1,5 +1,5 @@
 import { siteConfig } from '@/hotel-data';
-import { Reveal } from '@/components/ui/reveal';
+import { Reveal } from '@/ui/ui/reveal';
 
 export function GreetingSection() {
   const { greeting } = siteConfig;

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Reveal } from '@/components/ui/reveal';
+import { Reveal } from '@/ui/ui/reveal';
 import { siteConfig } from '@/hotel-data';
 
 export function StorySection() {

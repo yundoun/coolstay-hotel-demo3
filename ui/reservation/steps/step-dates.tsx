@@ -1,6 +1,7 @@
 'use client';
 
-import { useReservationContext } from '../reservation-context';
+import { useReservation } from '@/adapters/zustand/reservation-store';
+import { useShallow } from 'zustand/react/shallow';
 import { Calendar, Users, Minus, Plus } from 'lucide-react';
 
 export function StepDates() {
@@ -8,7 +9,17 @@ export function StepDates() {
     checkIn, checkOut, adults,
     setCheckIn, setCheckOut, setAdults,
     goTo,
-  } = useReservationContext();
+  } = useReservation(
+    useShallow((s) => ({
+      checkIn: s.checkIn,
+      checkOut: s.checkOut,
+      adults: s.adults,
+      setCheckIn: s.setCheckIn,
+      setCheckOut: s.setCheckOut,
+      setAdults: s.setAdults,
+      goTo: s.goTo,
+    }))
+  );
 
   const canProceed = checkIn && checkOut && checkIn < checkOut;
 

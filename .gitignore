@@ -20,3 +20,4 @@ npm-debug.log*
 
 # playwright
 .playwright-mcp/
+.vercel

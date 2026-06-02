@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useReservationContext } from '../reservation-context';
+import { useReservation } from '@/adapters/zustand/reservation-store';
+import { useShallow } from 'zustand/react/shallow';
 import { useApiRooms } from '@/application/hooks/useApiRooms';
 import { formatPrice, cn, nightsBetween } from '@/domain/shared/utils';
 import type { ApiRoom } from '@/adapters/coolstay/types';
-import { RoomDetailModal } from '@/components/ui/room-detail-modal';
-import type { RoomDetailData } from '@/components/ui/room-detail-modal';
+import { RoomDetailModal } from '@/ui/ui/room-detail-modal';
+import type { RoomDetailData } from '@/ui/ui/room-detail-modal';
 import { Maximize2, BedDouble, Users, Check, Eye, AlertCircle, CalendarX } from 'lucide-react';
 
 function toDetailData(room: ApiRoom, nights: number): RoomDetailData {
@@ -207,7 +208,17 @@ function DisabledRoomCard({
 
 export function StepRoom() {
   const { selectedRoom, setSelectedRoom, setStoreData, checkIn, checkOut, adults, goTo } =
-    useReservationContext();
+    useReservation(
+      useShallow((s) => ({
+        selectedRoom: s.selectedRoom,
+        setSelectedRoom: s.setSelectedRoom,
+        setStoreData: s.setStoreData,
+        checkIn: s.checkIn,
+        checkOut: s.checkOut,
+        adults: s.adults,
+        goTo: s.goTo,
+      }))
+    );
   const nights = checkIn && checkOut ? nightsBetween(checkIn, checkOut) : 0;
   const { storeData, loading, error } = useApiRooms(checkIn, checkOut, nights);
   const [detailRoom, setDetailRoom] = useState<RoomDetailData | null>(null);
