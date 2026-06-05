@@ -5,11 +5,11 @@ import Image from 'next/image';
 import { useReservation } from '@/adapters/zustand/reservation-store';
 import { useShallow } from 'zustand/react/shallow';
 import { useApiRooms } from '@/application/hooks/useApiRooms';
-import { formatPrice, cn, nightsBetween } from '@/domain/shared/utils';
+import { formatPrice, formatTime, cn, nightsBetween } from '@/domain/shared/utils';
 import type { ApiRoom } from '@/adapters/coolstay/types';
 import { RoomDetailModal } from '@/ui/ui/room-detail-modal';
 import type { RoomDetailData } from '@/ui/ui/room-detail-modal';
-import { Maximize2, BedDouble, Users, Check, Eye, AlertCircle, CalendarX } from 'lucide-react';
+import { Maximize2, BedDouble, Users, Check, Eye, AlertCircle, CalendarX, Clock } from 'lucide-react';
 
 function toDetailData(room: ApiRoom, nights: number): RoomDetailData {
   return {
@@ -94,6 +94,22 @@ function RoomCard({
               최대 {room.maxGuests}인
             </span>
           </div>
+          {(room.checkInTime || room.checkOutTime) && (
+            <div className="flex gap-3 text-xs text-neutral-500 mb-2">
+              {room.checkInTime && (
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-neutral-400" />
+                  체크인 {formatTime(room.checkInTime)}
+                </span>
+              )}
+              {room.checkOutTime && (
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-neutral-400" />
+                  체크아웃 {formatTime(room.checkOutTime)}
+                </span>
+              )}
+            </div>
+          )}
           {room.amenities.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
               {room.amenities.slice(0, 4).map((a) => (
@@ -194,6 +210,22 @@ function DisabledRoomCard({
               최대 {room.maxGuests}인
             </span>
           </div>
+          {(room.checkInTime || room.checkOutTime) && (
+            <div className="flex gap-3 text-xs text-neutral-400 mb-2">
+              {room.checkInTime && (
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  체크인 {formatTime(room.checkInTime)}
+                </span>
+              )}
+              {room.checkOutTime && (
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  체크아웃 {formatTime(room.checkOutTime)}
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <p className="text-base font-bold text-neutral-300">
           ₩{formatPrice(room.price)}
