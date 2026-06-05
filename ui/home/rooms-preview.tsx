@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { formatPrice } from '@/domain/shared/utils';
+import { formatPrice, formatTime } from '@/domain/shared/utils';
 import { Reveal } from '@/ui/ui/reveal';
 import { RoomDetailModal } from '@/ui/ui/room-detail-modal';
 import type { RoomDetailData } from '@/ui/ui/room-detail-modal';
@@ -127,9 +127,9 @@ export function RoomsPreview() {
                     {(room.checkInTime || room.checkOutTime) && (
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5 text-neutral-400" />
-                        {room.checkInTime && `IN ${room.checkInTime}`}
+                        {room.checkInTime && `체크인 ${formatTime(room.checkInTime)}`}
                         {room.checkInTime && room.checkOutTime && ' / '}
-                        {room.checkOutTime && `OUT ${room.checkOutTime}`}
+                        {room.checkOutTime && `체크아웃 ${formatTime(room.checkOutTime)}`}
                       </span>
                     )}
                   </div>

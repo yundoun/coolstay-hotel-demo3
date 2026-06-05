@@ -23,6 +23,20 @@ export function formatTime(time?: string): string {
   return time;
 }
 
+export function addDaysISO(iso: string, days: number): string {
+  const d = new Date(iso);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
+
+export function formatKoDate(iso: string): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return `${d.getMonth() + 1}/${d.getDate()}(${DAY_NAMES[d.getDay()]})`;
+}
+
 export function formatPhoneNumber(value: string): string {
   const digits = value.replace(/[^0-9]/g, '').slice(0, 11);
   if (digits.length <= 3) return digits;

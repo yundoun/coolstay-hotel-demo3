@@ -2,6 +2,8 @@
 
 import { useReservation } from '@/adapters/zustand/reservation-store';
 import { useShallow } from 'zustand/react/shallow';
+import { addDaysISO } from '@/domain/shared/utils';
+import { MAX_NIGHTS } from '@/domain/shared/constants';
 import { Calendar, Users, Minus, Plus } from 'lucide-react';
 
 export function StepDates() {
@@ -33,6 +35,8 @@ export function StepDates() {
           ),
         )
       : 0;
+
+  const maxCheckOut = checkIn ? addDaysISO(checkIn, MAX_NIGHTS) : undefined;
 
   const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
   const formatDate = (d: string) => {
@@ -85,10 +89,13 @@ export function StepDates() {
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
               min={checkIn || new Date().toISOString().split('T')[0]}
+              max={maxCheckOut}
               className="w-full h-12 px-4 border border-neutral-200 rounded-lg text-sm bg-white focus:outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10"
             />
           </div>
         </div>
+
+        <p className="text-xs text-neutral-400 text-right">최대 {MAX_NIGHTS}박까지 선택 가능</p>
 
         <div className="space-y-3">
           <label className="flex items-center gap-1.5 text-sm font-medium text-neutral-700">

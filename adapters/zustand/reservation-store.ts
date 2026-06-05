@@ -4,6 +4,8 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { ApiRoomSelection } from "@/domain/reservation/types";
 import type { ApiRoom, RoomsResponse } from "@/adapters/coolstay/types";
+import { addDaysISO, nightsBetween } from "@/domain/shared/utils";
+import { MAX_NIGHTS } from "@/domain/shared/constants";
 
 export type { ApiRoomSelection } from "@/domain/reservation/types";
 
@@ -18,12 +20,6 @@ export const STEPS = [
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
-}
-
-function addDaysISO(iso: string, days: number) {
-  const d = new Date(iso);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
 }
 
 export type ReservationState = {
@@ -92,9 +88,12 @@ const INITIAL_STATE = {
 };
 
 function scrollToReservation() {
-  const el = document.getElementById("reservation");
+  const anchor = document.getElementById("reservation-scroll-anchor");
+  const fallback = document.getElementById("reservation");
+  const el = anchor || fallback;
   if (el) {
-    const offset = el.getBoundingClientRect().top + window.scrollY - 80;
+    const headerH = window.innerWidth >= 1024 ? 72 : 64;
+    const offset = el.getBoundingClientRect().top + window.scrollY - headerH;
     window.scrollTo({ top: offset, behavior: "smooth" });
   }
 }
@@ -107,9 +106,24 @@ export const useReservation = create<ReservationState>()(
         set({ step: s });
         scrollToReservation();
       },
-      setDates: (checkIn, checkOut) => set({ checkIn, checkOut }),
-      setCheckIn: (checkIn) => set({ checkIn }),
-      setCheckOut: (checkOut) => set({ checkOut }),
+      setDates: (checkIn, checkOut) => {
+        const maxOut = addDaysISO(checkIn, MAX_NIGHTS);
+        set({ checkIn, checkOut: checkOut > maxOut ? maxOut : checkOut });
+      },
+      setCheckIn: (checkIn) =>
+        set((prev) => {
+          const minOut = addDaysISO(checkIn, 1);
+          const maxOut = addDaysISO(checkIn, MAX_NIGHTS);
+          let co = prev.checkOut;
+          if (co <= checkIn) co = minOut;
+          if (nightsBetween(checkIn, co) > MAX_NIGHTS) co = maxOut;
+          return { checkIn, checkOut: co };
+        }),
+      setCheckOut: (checkOut) =>
+        set((prev) => {
+          const maxOut = addDaysISO(prev.checkIn, MAX_NIGHTS);
+          return { checkOut: checkOut > maxOut ? maxOut : checkOut };
+        }),
       setAdults: (adults) => set({ adults }),
       setHotel: (hotelId) => set({ hotelId, roomId: null, apiRoom: null }),
       setRoom: (roomId) => set({ roomId }),

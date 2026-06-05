@@ -11,7 +11,7 @@ export function StepIndicator() {
   );
 
   return (
-    <div className="flex items-center justify-center gap-0 mb-12">
+    <div className="flex items-center justify-center gap-0">
       {STEPS.map((s, i) => (
         <div key={s.num} className="flex items-center">
           <button
