@@ -10,7 +10,7 @@ export function StorySection() {
       <div className="mx-auto max-w-[1200px] px-6 lg:px-10">
         <Reveal>
           <p className="font-barlow text-xs tracking-[0.3em] text-neutral-400 uppercase mb-12">
-            {about.eyebrow}
+            {about.subtitle}
           </p>
         </Reveal>
 
