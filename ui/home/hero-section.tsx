@@ -1,120 +1,67 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
+import { motion } from 'framer-motion';
 import { siteConfig } from '@/hotel-data';
-
-const AUTOPLAY_INTERVAL = 10_000;
-const SWIPE_THRESHOLD = 50;
+import 'swiper/css';
+import 'swiper/css/effect-fade';
 
 export function HeroSection() {
   const images = siteConfig.heroImages.slice(0, 5);
   const hasMultiple = images.length >= 2;
-  const [current, setCurrent] = useState(0);
-
-  const goTo = useCallback(
-    (index: number) => setCurrent(index),
-    [],
-  );
-
-  const dragStartX = useRef<number | null>(null);
-
-  const goNext = useCallback(() => {
-    setCurrent((prev) => (prev + 1) % images.length);
-  }, [images.length]);
-
-  const goPrev = useCallback(() => {
-    setCurrent((prev) => (prev - 1 + images.length) % images.length);
-  }, [images.length]);
-
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    dragStartX.current = e.clientX;
-  }, []);
-
-  const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    if (dragStartX.current === null) return;
-    const diff = e.clientX - dragStartX.current;
-    dragStartX.current = null;
-    if (Math.abs(diff) < SWIPE_THRESHOLD) return;
-    if (diff < 0) goNext();
-    else goPrev();
-  }, [goNext, goPrev]);
-
-  const scrollToGreeting = () => {
-    const el = document.getElementById('greeting');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  /* ── autoplay (10 s) ── */
-  useEffect(() => {
-    if (!hasMultiple) return;
-
-    let tick: ReturnType<typeof setInterval> | null = null;
-
-    const start = () => {
-      if (tick) clearInterval(tick);
-      tick = setInterval(() => {
-        setCurrent((prev) => (prev + 1) % images.length);
-      }, AUTOPLAY_INTERVAL);
-    };
-
-    const onVisibility = () => {
-      if (document.hidden) {
-        if (tick) { clearInterval(tick); tick = null; }
-      } else {
-        start();
-      }
-    };
-
-    start();
-    document.addEventListener('visibilitychange', onVisibility);
-
-    return () => {
-      if (tick) clearInterval(tick);
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, [hasMultiple, images.length]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
 
   const name = siteConfig.name;
   const nameEn = siteConfig.nameEn;
 
+  const scrollToGreeting = () => {
+    document.getElementById('greeting')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section
       id="hero"
-      className="relative h-screen min-h-[600px] max-h-[900px] cursor-grab active:cursor-grabbing select-none"
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
+      className="relative h-screen min-h-[600px] max-h-[900px]"
     >
-      {/* ── images ── */}
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={current}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
-          className="absolute inset-0"
-        >
-          <Image
-            src={images[current]}
-            alt={`${name} ${current + 1}`}
-            fill
-            className="object-cover"
-            priority={current === 0}
-            sizes="100vw"
-          />
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/50 z-[1]" />
+      {/* ── images (Swiper) ── */}
+      <Swiper
+        modules={[Autoplay, EffectFade]}
+        effect="fade"
+        autoplay={{ delay: 10_000, disableOnInteraction: false }}
+        onSwiper={setSwiperInstance}
+        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+        loop
+        className="h-full w-full"
+      >
+        {images.map((src, i) => (
+          <SwiperSlide key={i}>
+            <div className="relative h-full w-full">
+              <Image
+                src={src}
+                alt={`${name} ${i + 1}`}
+                fill
+                sizes="100vw"
+                priority={i === 0}
+                className="object-cover scale-105 transition-transform duration-[8000ms] ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/50" />
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
       {/* ── text ── */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-end pb-24 text-center px-6">
+      <div className="absolute inset-0 z-10 h-full flex flex-col items-center justify-end pb-24 text-center px-6 pointer-events-none">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
+          className="pointer-events-auto"
         >
           <p className="font-barlow text-sm tracking-[0.35em] text-white/60 uppercase mb-4">
             {siteConfig.city}
@@ -135,16 +82,16 @@ export function HeroSection() {
 
         {/* ── indicator dots ── */}
         {hasMultiple && (
-          <div className="flex gap-2.5 mt-8">
+          <div className="flex gap-2.5 mt-8 pointer-events-auto">
             {images.map((_, i) => (
               <button
                 key={i}
-                onClick={() => goTo(i)}
+                onClick={() => swiperInstance?.slideTo(i + 1)}
                 aria-label={`이미지 ${i + 1}로 이동`}
-                className={`w-2 h-2 rounded-full transition-all duration-500 ${
-                  i === current
-                    ? 'bg-white scale-125'
-                    : 'bg-white/40 hover:bg-white/70'
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  i === activeIndex
+                    ? 'w-6 bg-white'
+                    : 'w-2 bg-white/40 hover:bg-white/70'
                 }`}
               />
             ))}
