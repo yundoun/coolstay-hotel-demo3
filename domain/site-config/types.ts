@@ -60,7 +60,7 @@ export type SiteConfig = {
     body: string;
     /** 한 줄 철학/모토 — 본문 아래 이탤릭으로 표시, 없으면 빈 문자열 */
     philosophy?: string;
-    /** 갤러리 이미지 URL 목록 (최소 2장 권장, 2열 그리드로 표시) */
+    /** 갤러리 이미지 URL (2장, 2열 그리드로 표시) */
     images: string[];
   };
 

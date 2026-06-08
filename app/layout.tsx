@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { SiteHeader } from '@/ui/layout/site-header';
-import { SiteFooter } from '@/ui/layout/site-footer';
 import { siteConfig } from '@/hotel-data';
 
 export const metadata: Metadata = {
@@ -27,9 +25,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        {children}
       </body>
     </html>
   );

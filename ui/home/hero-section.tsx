@@ -10,6 +10,14 @@ import { siteConfig } from '@/hotel-data';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
+/* Swiper fade: 비활성 슬라이드 완전히 숨김 */
+const fadeFixStyle = `
+  .swiper-slide:not(.swiper-slide-active) {
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+`;
+
 export function HeroSection() {
   const images = siteConfig.heroImages.slice(0, 5);
   const hasMultiple = images.length >= 2;
@@ -28,6 +36,7 @@ export function HeroSection() {
       id="hero"
       className="relative h-screen min-h-[600px] max-h-[900px]"
     >
+      <style>{fadeFixStyle}</style>
       {/* ── images (Swiper) ── */}
       <Swiper
         modules={[Autoplay, EffectFade]}

@@ -14,7 +14,7 @@ export function GreetingSection() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 leading-snug mb-8">
+          <h2 className="text-2xl lg:text-3xl font-bold text-neutral-900 leading-snug mb-8 whitespace-pre-line">
             {greeting.headline}
           </h2>
         </Reveal>
@@ -22,7 +22,7 @@ export function GreetingSection() {
         <Reveal delay={0.2}>
           <div className="space-y-6 text-base leading-[2] text-neutral-500">
             {greeting.body.split('\n\n').map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i} className="whitespace-pre-line">{p}</p>
             ))}
           </div>
         </Reveal>
