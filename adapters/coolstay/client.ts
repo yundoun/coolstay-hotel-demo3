@@ -135,7 +135,10 @@ export async function fetchStoreDetail(params: {
       { headers, cache: "no-store" },
     );
     const data = await parseUpstream(res, "숙소 조회 실패");
-    return data.result.motel;
+    if (!data.result?.motel) {
+      console.error("[fetchStoreDetail] motel이 응답에 없음. motel_key:", motelKey, "result:", JSON.stringify(data.result).slice(0, 300));
+    }
+    return data.result?.motel;
   });
 }
 
