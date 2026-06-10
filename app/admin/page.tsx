@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ImageUploadZone } from './_components/image-upload-zone';
 import type { SiteConfig } from '@/domain/site-config/types';
-import { Save, Plus, Trash2, Eye, RotateCcw } from 'lucide-react';
+import { Save, Plus, Trash2, Eye, RotateCcw, CheckCircle2, XCircle } from 'lucide-react';
 
 export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [motelKey, setMotelKey] = useState('');
+  const [keySaving, setKeySaving] = useState(false);
+  const [keyMessage, setKeyMessage] = useState<{ text: string; ok: boolean } | null>(null);
   const { register, handleSubmit, setValue, watch, reset } = useForm<SiteConfig>();
 
   const heroImages = watch('heroImages') || [];
@@ -17,13 +20,33 @@ export default function AdminPage() {
   const nearbyItems = watch('directions.nearbyItems') || [];
 
   useEffect(() => {
-    fetch('/api/admin/config')
-      .then((res) => res.json())
-      .then((data) => {
-        reset(data);
-        setLoading(false);
-      });
+    Promise.all([
+      fetch('/api/admin/config').then((r) => r.json()),
+      fetch('/api/admin/api-key').then((r) => r.json()),
+    ]).then(([config, keyData]) => {
+      reset(config);
+      setMotelKey(keyData.motelKey || '');
+      setLoading(false);
+    });
   }, [reset]);
+
+  const saveMotelKey = async () => {
+    if (!motelKey.trim()) return;
+    setKeySaving(true);
+    setKeyMessage(null);
+    const res = await fetch('/api/admin/api-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ motelKey: motelKey.trim() }),
+    });
+    setKeySaving(false);
+    if (res.ok) {
+      setKeyMessage({ text: '모텔키 저장 완료! 즉시 반영됩니다.', ok: true });
+    } else {
+      setKeyMessage({ text: '저장 실패. 다시 시도해주세요.', ok: false });
+    }
+    setTimeout(() => setKeyMessage(null), 3000);
+  };
 
   const onSubmit = async (data: SiteConfig) => {
     setSaving(true);
@@ -75,14 +98,37 @@ export default function AdminPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
 
-        {/* ── API 키 안내 ── */}
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-          <p className="font-medium mb-1">객실·예약 데이터 연결</p>
-          <p className="text-amber-600">
-            호텔의 객실/가격을 불러오려면 <code className="bg-amber-100 px-1 rounded">.env.local</code> 파일에서
-            <code className="bg-amber-100 px-1 rounded">COOLSTAY_MOTEL_KEY</code>를 해당 호텔 키로 변경 후 서버를 재시작하세요.
+        {/* ── 호텔 연결 (모텔키) ── */}
+        <Section title="호텔 연결 (API 키)">
+          <p className="text-sm text-neutral-500 -mt-2 mb-3">
+            호텔의 객실·가격 데이터를 불러올 모텔키를 입력하세요. 저장 즉시 반영됩니다.
           </p>
-        </div>
+          <Field label="모텔키" desc="CoolStay 제휴점 키">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={motelKey}
+                onChange={(e) => setMotelKey(e.target.value)}
+                placeholder="P_KCST_00000000000000_XXXXXX"
+                className="field flex-1"
+              />
+              <button
+                type="button"
+                onClick={saveMotelKey}
+                disabled={keySaving}
+                className="flex items-center gap-1.5 bg-neutral-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-neutral-800 disabled:opacity-50 transition-colors whitespace-nowrap"
+              >
+                {keySaving ? '저장 중...' : '키 저장'}
+              </button>
+            </div>
+          </Field>
+          {keyMessage && (
+            <div className={`flex items-center gap-1.5 mt-2 text-sm font-medium ${keyMessage.ok ? 'text-green-600' : 'text-red-600'}`}>
+              {keyMessage.ok ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+              {keyMessage.text}
+            </div>
+          )}
+        </Section>
 
         {/* ── 기본 정보 ── */}
         <Section title="기본 정보">
@@ -216,11 +262,15 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={async () => {
-              if (!confirm('원본 데이터로 초기화할까요?')) return;
+              if (!confirm('원본 데이터로 초기화할까요? (모텔키도 함께 초기화됩니다)')) return;
               await fetch('/api/admin/config', { method: 'DELETE' });
-              const res = await fetch('/api/admin/config');
-              const data = await res.json();
+              const [configRes, keyRes] = await Promise.all([
+                fetch('/api/admin/config'),
+                fetch('/api/admin/api-key'),
+              ]);
+              const [data, keyData] = await Promise.all([configRes.json(), keyRes.json()]);
               reset(data);
+              setMotelKey(keyData.motelKey || '');
               setMessage('원본으로 초기화 완료!');
               setTimeout(() => setMessage(''), 3000);
             }}

@@ -1,5 +1,8 @@
 /** CoolStay upstream API 클라이언트 */
 
+import { readFileSync } from "fs";
+import { join } from "path";
+
 const API_BASE = process.env.COOLSTAY_API_BASE;
 
 /** yyyy-MM-dd → yyyyMMdd (CoolStay API 호환) */
@@ -7,7 +10,17 @@ function toCompactDate(iso: string): string {
   return iso.replace(/-/g, "");
 }
 
-export const MOTEL_KEY = process.env.COOLSTAY_MOTEL_KEY ?? "";
+const KEY_PATH = join(process.cwd(), "hotel-data", "gyeongju-cl", "api-key.json");
+
+/** api-key.json에서 모텔키를 읽음 (요청마다 최신 값 반영) */
+export function getMotelKey(): string {
+  try {
+    const data = JSON.parse(readFileSync(KEY_PATH, "utf-8"));
+    return data.motelKey || "";
+  } catch {
+    return process.env.COOLSTAY_MOTEL_KEY ?? "";
+  }
+}
 
 export function getApiBase() {
   if (!API_BASE) throw new Error("COOLSTAY_API_BASE 미설정");
@@ -111,10 +124,11 @@ export async function fetchStoreDetail(params: {
   checkIn?: string;
   checkOut?: string;
 }) {
-  if (!MOTEL_KEY) throw new Error("COOLSTAY_MOTEL_KEY 미설정");
+  const motelKey = getMotelKey();
+  if (!motelKey) throw new Error("COOLSTAY_MOTEL_KEY 미설정 — /admin 페이지에서 모텔키를 입력하세요.");
   return callWithRetry(async (headers) => {
     const qs = new URLSearchParams({
-      motel_key: MOTEL_KEY,
+      motel_key: motelKey,
       pure_click_yn: "N",
     });
     if (params.checkIn) qs.set("search_start", toCompactDate(params.checkIn));

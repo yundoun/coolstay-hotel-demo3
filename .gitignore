@@ -18,6 +18,9 @@ npm-debug.log*
 # env files
 .env*.local
 
+# API key (managed via admin UI)
+hotel-data/**/api-key.json
+
 # playwright
 .playwright-mcp/
 .vercel

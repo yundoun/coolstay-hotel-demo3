@@ -5,8 +5,11 @@ import type { SiteConfig } from '@/domain/site-config/types';
 
 export const dynamic = 'force-dynamic';
 
-const CONFIG_PATH = join(process.cwd(), 'hotel-data', 'gyeongju-cl', 'index.ts');
-const ORIGINAL_PATH = join(process.cwd(), 'hotel-data', 'gyeongju-cl', '_original.ts');
+const HOTEL_DIR = join(process.cwd(), 'hotel-data', 'gyeongju-cl');
+const CONFIG_PATH = join(HOTEL_DIR, 'index.ts');
+const ORIGINAL_PATH = join(HOTEL_DIR, '_original.ts');
+const KEY_PATH = join(HOTEL_DIR, 'api-key.json');
+const ORIGINAL_KEY_PATH = join(HOTEL_DIR, '_original-api-key.json');
 
 export async function GET() {
   const raw = readFileSync(CONFIG_PATH, 'utf-8');
@@ -32,8 +35,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE() {
-  // Reset: restore original
+  // Reset: restore original config + api key
   copyFileSync(ORIGINAL_PATH, CONFIG_PATH);
+  copyFileSync(ORIGINAL_KEY_PATH, KEY_PATH);
   return NextResponse.json({ success: true });
 }
 
