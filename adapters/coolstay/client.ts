@@ -132,7 +132,7 @@ export async function fetchStoreDetail(params: {
 
     const res = await fetch(
       `${getApiBase()}/api/v2/mobile/contents/details/list?${qs}`,
-      { headers },
+      { headers, cache: "no-store" },
     );
     const data = await parseUpstream(res, "숙소 조회 실패");
     return data.result.motel;
@@ -198,7 +198,7 @@ export async function fetchGuestReservation(
     });
     const res = await fetch(
       `${getApiBase()}/api/v2/mobile/reserv/guest/list?${qs}`,
-      { headers },
+      { headers, cache: "no-store" },
     );
     const data = await parseUpstream(res, "예약 조회 실패");
     return data.result;
@@ -228,7 +228,7 @@ export async function fetchTermsList() {
   return callWithRetry(async (headers) => {
     const res = await fetch(
       `${getApiBase()}/api/v2/mobile/manage/terms/list`,
-      { headers },
+      { headers, cache: "no-store" },
     );
     const data = await parseUpstream(res, "약관 조회 실패");
     return data.result.terms as {
@@ -259,7 +259,7 @@ export async function fetchRefundPolicy(params: {
     });
     const res = await fetch(
       `${getApiBase()}/api/v2/mobile/contents/refund-policy/list?${qs}`,
-      { headers },
+      { headers, cache: "no-store" },
     );
     const data = await parseUpstream(res, "환불 규정 조회 실패");
     return (data.result.refund_policies ??
