@@ -23,10 +23,6 @@ export type SiteConfig = {
   phone: string;
   /** 이메일 — 없으면 빈 문자열, 빈 문자열이면 화면에 표시되지 않음 */
   email: string;
-  /** 체크인 시간 (예: "15:00") */
-  checkInTime: string;
-  /** 체크아웃 시간 (예: "11:00") */
-  checkOutTime: string;
 
   /* ══════════════════════════════════════
      Hero 섹션

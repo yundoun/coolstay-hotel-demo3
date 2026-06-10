@@ -83,10 +83,6 @@ export const siteConfig: SiteConfig = {
   phone: ${s(c.phone)},
   /** 이메일 — 없으면 빈 문자열 (화면에 표시되지 않음) */
   email: ${s(c.email)},
-  /** 체크인 시간 */
-  checkInTime: ${s(c.checkInTime)},
-  /** 체크아웃 시간 */
-  checkOutTime: ${s(c.checkOutTime)},
 
   /* ── Hero 섹션 (배너 슬라이드 이미지, 최대 5장) ── */
   heroImages: [

@@ -26,10 +26,6 @@ export const siteConfig: SiteConfig = {
   phone: "010-2881-4995",
   /** 이메일 — 없으면 빈 문자열 (화면에 표시되지 않음) */
   email: "",
-  /** 체크인 시간 */
-  checkInTime: "15:00",
-  /** 체크아웃 시간 */
-  checkOutTime: "11:00",
 
   /* ── Hero 섹션 (배너 슬라이드 이미지, 최대 5장) ── */
   heroImages: [

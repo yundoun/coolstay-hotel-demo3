@@ -150,14 +150,6 @@ export default function AdminPage() {
           <Field label="이메일" desc="비워두면 화면에 표시되지 않음">
             <input {...register('email')} className="field" />
           </Field>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="체크인 시간" desc="기본값 (API 없을 때 사용)">
-              <input {...register('checkInTime')} className="field" placeholder="15:00" />
-            </Field>
-            <Field label="체크아웃 시간" desc="기본값 (API 없을 때 사용)">
-              <input {...register('checkOutTime')} className="field" placeholder="11:00" />
-            </Field>
-          </div>
         </Section>
 
         {/* ── Hero 섹션 ── */}
