@@ -1,7 +1,6 @@
 "use client";
 
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import type { ApiRoomSelection } from "@/domain/reservation/types";
 import type { ApiRoom, RoomsResponse } from "@/adapters/coolstay/types";
 import { addDaysISO, nightsBetween } from "@/domain/shared/utils";
@@ -99,7 +98,6 @@ function scrollToReservation() {
 }
 
 export const useReservation = create<ReservationState>()(
-  persist(
     (set) => ({
       ...INITIAL_STATE,
       goTo: (s) => {
@@ -140,9 +138,4 @@ export const useReservation = create<ReservationState>()(
       setReservationNumber: (n) => set({ reservationNumber: n }),
       reset: () => set({ ...INITIAL_STATE }),
     }),
-    {
-      name: "coolstay-reservation",
-      storage: createJSONStorage(() => sessionStorage),
-    },
-  ),
 );
