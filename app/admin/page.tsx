@@ -49,6 +49,14 @@ export default function AdminPage() {
   };
 
   const onSubmit = async (data: SiteConfig) => {
+    const missing: string[] = [];
+    if (!data.heroImages?.length) missing.push('Hero 배너 이미지');
+    if (!data.about?.images?.length) missing.push('소개 섹션 이미지');
+    if (missing.length) {
+      setMessage(`${missing.join(', ')}를 1장 이상 등록해주세요.`);
+      setTimeout(() => setMessage(''), 4000);
+      return;
+    }
     setSaving(true);
     setMessage('');
     const res = await fetch('/api/admin/config', {
@@ -138,17 +146,11 @@ export default function AdminPage() {
           <Field label="호텔명 (영문)" desc="히어로·헤더에 표시">
             <input {...register('nameEn')} className="field" />
           </Field>
-          <Field label="도시">
-            <input {...register('city')} className="field" />
-          </Field>
           <Field label="주소" desc="지도 검색에도 사용됨">
             <input {...register('address')} className="field" />
           </Field>
           <Field label="대표 연락처">
             <input {...register('phone')} className="field" />
-          </Field>
-          <Field label="이메일" desc="비워두면 화면에 표시되지 않음">
-            <input {...register('email')} className="field" />
           </Field>
         </Section>
 
@@ -180,9 +182,6 @@ export default function AdminPage() {
 
         {/* ── About ── */}
         <Section title="호텔 소개 (About)">
-          <Field label="소제목" desc="제목 위에 작게 표시 (예: About, Story)">
-            <input {...register('about.subtitle')} className="field" />
-          </Field>
           <Field label="제목" desc="줄바꿈은 Enter 키 사용">
             <textarea {...register('about.title')} className="field" rows={2} />
           </Field>

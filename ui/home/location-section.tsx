@@ -1,7 +1,7 @@
 import { siteConfig } from '@/hotel-data';
 import { Reveal } from '@/ui/ui/reveal';
 import { Container } from '@/ui/ui/container';
-import { MapPin, Phone, Mail, Car } from 'lucide-react';
+import { MapPin, Phone, Car } from 'lucide-react';
 
 export function LocationSection() {
   const { directions } = siteConfig;
@@ -52,22 +52,12 @@ export function LocationSection() {
                 </div>
               </div>
 
-              {siteConfig.email && (
-                <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-medium text-neutral-900 mb-1">이메일</p>
-                    <p className="text-sm text-neutral-500">{siteConfig.email}</p>
-                  </div>
-                </div>
-              )}
-
               {directions.parkingInfo && (
                 <div className="flex items-start gap-3">
                   <Car className="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium text-neutral-900 mb-1">주차</p>
-                    <p className="text-sm text-neutral-500">{directions.parkingInfo}</p>
+                    <p className="text-sm text-neutral-500 whitespace-pre-line">{directions.parkingInfo}</p>
                   </div>
                 </div>
               )}

@@ -73,7 +73,7 @@ export function HeroSection() {
           className="pointer-events-auto"
         >
           <p className="font-barlow text-sm tracking-[0.35em] text-white/60 uppercase mb-4">
-            {siteConfig.city}
+            {siteConfig.shortConcept}
           </p>
           <h1 className="font-barlow text-4xl md:text-6xl lg:text-7xl font-bold tracking-wider text-white mb-4">
             {nameEn || name}

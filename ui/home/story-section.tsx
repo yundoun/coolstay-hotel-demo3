@@ -23,7 +23,7 @@ export function StorySection() {
             </Reveal>
 
             <Reveal delay={0.2}>
-              <p className="text-base leading-[1.9] text-neutral-500">
+              <p className="text-base leading-[1.9] text-neutral-500 whitespace-pre-line">
                 {about.body}
               </p>
             </Reveal>
@@ -36,6 +36,20 @@ export function StorySection() {
               </Reveal>
             )}
           </div>
+
+          {about.images.length === 1 && (
+            <Reveal delay={0.2}>
+              <div className="relative aspect-[3/4] rounded-sm overflow-hidden">
+                <Image
+                  src={about.images[0]}
+                  alt={`${siteConfig.name} 공간`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                />
+              </div>
+            </Reveal>
+          )}
 
           {about.images.length >= 2 && (
             <div className="grid grid-cols-2 gap-3">
